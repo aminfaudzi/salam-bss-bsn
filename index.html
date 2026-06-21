@@ -793,31 +793,86 @@ p { font-size: 14px; line-height: 1.65; color: var(--c-text2); }
 }
 
 @media print {
-  @page { size: landscape; margin: 0; }
+  @page { size: 960px 540px landscape; margin: 0; }
   *, *::before, *::after { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; color-adjust: exact !important; }
-  body { overflow: visible !important; height: auto !important; }
-  html { overflow: visible !important; }
-  .deck { position: static !important; width: auto !important; height: auto !important; }
+  html, body { margin: 0 !important; padding: 0 !important; overflow: visible !important; height: auto !important; width: 960px !important; }
+  .deck { position: static !important; width: 960px !important; height: auto !important; }
   .prog, .nav, body::after { display: none !important; }
   .slide, .slide:not(.on) {
-    display: flex !important;
     position: relative !important; inset: auto !important;
+    display: flex !important;
     opacity: 1 !important; transform: none !important;
     pointer-events: auto !important;
-    page-break-after: always; break-after: page;
-    width: 100% !important;
-    height: 100vh !important;
-    min-height: 100vh !important;
-    max-height: 100vh !important;
+    width: 960px !important; height: 540px !important;
+    min-height: 540px !important; max-height: 540px !important;
     overflow: hidden !important;
+    padding: 28px 44px 32px !important;
     box-sizing: border-box !important;
+    page-break-after: always; break-after: page;
+    page-break-inside: avoid; break-inside: avoid;
   }
-  .slide.s1 { align-items: center !important; justify-content: center !important; }
-  .slide.s13 { align-items: center !important; justify-content: center !important; }
   .slide:last-child { page-break-after: auto; break-after: auto; }
+  .slide.s1 { padding: 36px 44px !important; align-items: center !important; justify-content: center !important; }
+  .slide.s13 { align-items: center !important; justify-content: center !important; }
   .blob { display: block !important; }
   .rv { opacity: 1 !important; transform: none !important; transition: none !important; }
   .slide.on .rv, .slide .rv { opacity: 1 !important; transform: none !important; transition-delay: 0s !important; }
+  .inner { max-width: 100% !important; }
+  h1 { font-size: 28px !important; letter-spacing: -0.5px !important; }
+  h2 { font-size: 20px !important; }
+  h3 { font-size: 12px !important; }
+  p { font-size: 11px !important; }
+  .label { font-size: 8px !important; letter-spacing: 2px !important; }
+  .s1-title { font-size: 36px !important; letter-spacing: -1.5px !important; }
+  .s1-sub { font-size: 13px !important; }
+  .s1-meta { font-size: 9px !important; }
+  .s-about-layout { display: grid !important; grid-template-columns: 1fr 1.2fr !important; gap: 20px !important; margin-top: 12px !important; }
+  .s-about-logo { padding: 20px !important; }
+  .s-about-logo img { height: 40px !important; }
+  .s-about-text h2 { font-size: 18px !important; }
+  .about-tags { gap: 6px !important; margin-top: 10px !important; }
+  .about-tag { font-size: 8px !important; padding: 4px 10px !important; }
+  .s2-layout { display: grid !important; grid-template-columns: 0.4fr 0.6fr !important; gap: 24px !important; margin-top: 12px !important; }
+  .s2-items { gap: 6px !important; }
+  .s2-item { padding: 10px 14px !important; gap: 10px !important; }
+  .s3-grid { display: grid !important; grid-template-columns: 1fr 1fr !important; gap: 10px !important; margin-top: 12px !important; }
+  .s3-card { padding: 14px !important; }
+  .s4-quote { font-size: 16px !important; }
+  .s4-stats { display: grid !important; grid-template-columns: repeat(3, 1fr) !important; gap: 10px !important; margin-top: 12px !important; }
+  .s4-stat { padding: 14px !important; }
+  .s4-num { font-size: 24px !important; }
+  .s5-compare { display: grid !important; grid-template-columns: 1fr 1fr !important; }
+  .s5-col-body { padding: 10px !important; }
+  .s5-feat { font-size: 10px !important; }
+  .s6-cols { display: grid !important; grid-template-columns: repeat(4, 1fr) !important; gap: 10px !important; }
+  .s6-col { padding: 10px !important; }
+  .s6-col-icon { width: 28px !important; height: 28px !important; }
+  .s6-col-icon svg { width: 14px !important; height: 14px !important; }
+  .s6-field { font-size: 9px !important; }
+  .s7-grid { display: grid !important; grid-template-columns: repeat(3, 1fr) !important; gap: 10px !important; }
+  .s7-feat { padding: 10px !important; }
+  .s7-feat-icon { width: 28px !important; height: 28px !important; }
+  .s7-feat-icon svg { width: 14px !important; height: 14px !important; }
+  .s8-split { display: grid !important; grid-template-columns: 1fr 1fr !important; gap: 16px !important; }
+  .s8-col { padding: 10px !important; }
+  .s8-item { font-size: 10px !important; }
+  .s9-track { display: grid !important; grid-template-columns: repeat(3, 1fr) !important; gap: 10px !important; }
+  .s9-phase { padding: 10px !important; }
+  .rewards-grid { display: grid !important; grid-template-columns: 1fr 1fr !important; gap: 8px !important; margin-top: 12px !important; }
+  .reward-tier { padding: 8px !important; }
+  .reward-icon { width: 28px !important; height: 28px !important; font-size: 14px !important; }
+  .reward-info h3 { font-size: 12px !important; }
+  .points-card, .commission-card { padding: 10px !important; }
+  .pricing-grid { display: grid !important; grid-template-columns: repeat(3, 1fr) !important; gap: 1px !important; margin-top: 12px !important; }
+  .pricing-col { padding: 10px !important; }
+  .pricing-price { font-size: 22px !important; }
+  .pricing-feat { font-size: 10px !important; padding: 4px 0 !important; }
+  .s11-grid { display: grid !important; grid-template-columns: repeat(3, 1fr) !important; gap: 10px !important; }
+  .s11-card { padding: 10px !important; }
+  .s11-icon { width: 18px !important; height: 18px !important; }
+  .s11-icon svg { width: 10px !important; height: 10px !important; }
+  .s12-steps { display: grid !important; grid-template-columns: repeat(4, 1fr) !important; gap: 10px !important; }
+  .s12-step { padding: 10px !important; }
 }
 </style>
 </head>
