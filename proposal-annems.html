@@ -1,0 +1,1319 @@
+<!DOCTYPE html>
+<html lang="ms">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Business Sustainability Network — Proposal</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600&display=swap');
+
+:root {
+  --c-bg: #09090B;
+  --c-bg2: #18181B;
+  --c-surface: rgba(255,255,255,0.04);
+  --c-surface2: rgba(255,255,255,0.06);
+  --c-border: rgba(255,255,255,0.06);
+  --c-text: #FAFAFA;
+  --c-text2: #A1A1AA;
+  --c-text3: #71717A;
+  --c-gold: #EAB308;
+  --c-gold2: #FACC15;
+  --c-teal: #14B8A6;
+  --c-blue: #3B82F6;
+  --c-rose: #F43F5E;
+  --c-violet: #8B5CF6;
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+  font-family: 'Inter', sans-serif;
+  background: var(--c-bg);
+  overflow: hidden;
+  width: 100vw;
+  height: 100vh;
+  -webkit-font-smoothing: antialiased;
+  user-select: none;
+}
+
+/* GRAIN OVERLAY */
+body::after {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
+  pointer-events: none;
+  z-index: 9999;
+}
+
+/* PROGRESS */
+.prog { position: fixed; top: 0; left: 0; height: 2px; background: var(--c-gold); z-index: 999; transition: width 0.5s cubic-bezier(0.4,0,0.2,1); }
+
+/* DECK */
+.deck { width: 100vw; height: 100vh; position: relative; }
+
+/* SLIDES */
+.slide {
+  position: absolute; inset: 0;
+  display: flex; align-items: center; justify-content: center;
+  opacity: 0; transform: translateY(12px);
+  transition: opacity 0.5s cubic-bezier(0.4,0,0.2,1), transform 0.5s cubic-bezier(0.4,0,0.2,1);
+  pointer-events: none;
+  padding: 48px 56px 56px;
+}
+.slide.on { opacity: 1; transform: translateY(0); pointer-events: auto; }
+.slide.out { opacity: 0; transform: translateY(-12px); }
+
+/* REVEAL */
+.rv { opacity: 0; transform: translateY(20px); transition: opacity 0.5s ease, transform 0.5s ease; }
+.slide.on .rv { opacity: 1; transform: translateY(0); }
+.slide.on .rv.d1 { transition-delay: .08s; }
+.slide.on .rv.d2 { transition-delay: .16s; }
+.slide.on .rv.d3 { transition-delay: .24s; }
+.slide.on .rv.d4 { transition-delay: .32s; }
+.slide.on .rv.d5 { transition-delay: .4s; }
+.slide.on .rv.d6 { transition-delay: .48s; }
+.slide.on .rv.d7 { transition-delay: .56s; }
+
+/* NAV */
+.nav {
+  position: fixed; bottom: 0; left: 0; right: 0; height: 40px;
+  background: rgba(9,9,11,0.8); backdrop-filter: blur(20px);
+  border-top: 1px solid var(--c-border);
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 0 20px; z-index: 100;
+}
+.nav-l { display: flex; align-items: center; gap: 10px; }
+.dots { display: flex; gap: 3px; }
+.dot { width: 4px; height: 4px; border-radius: 2px; background: rgba(255,255,255,0.12); cursor: pointer; transition: all 0.3s; }
+.dot.on { background: var(--c-gold); width: 16px; }
+.nav-ct { font-family: 'JetBrains Mono', monospace; font-size: 10px; color: var(--c-text3); }
+.nav-ct b { color: var(--c-gold); font-size: 12px; }
+.nav-r { display: flex; gap: 4px; }
+.nb { width: 26px; height: 26px; border-radius: 6px; background: var(--c-surface); border: 1px solid var(--c-border); color: var(--c-text3); display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: 10px; transition: all 0.2s; }
+.nb:hover { background: var(--c-surface2); color: var(--c-text); border-color: rgba(255,255,255,0.12); }
+
+/* MESH BLOBS */
+.blob {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(80px);
+  opacity: 0.15;
+  pointer-events: none;
+  animation: drift 12s ease-in-out infinite alternate;
+}
+@keyframes drift {
+  0% { transform: translate(0,0) scale(1); }
+  100% { transform: translate(30px,-20px) scale(1.1); }
+}
+
+/* SHARED */
+.inner { width: 100%; max-width: 1100px; position: relative; z-index: 1; }
+
+.label {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px; font-weight: 600;
+  letter-spacing: 3px; text-transform: uppercase;
+  color: var(--c-gold);
+}
+
+h1 {
+  font-size: clamp(48px, 6vw, 80px);
+  font-weight: 800;
+  line-height: 0.95;
+  letter-spacing: -2px;
+  color: var(--c-text);
+}
+
+h2 {
+  font-size: clamp(28px, 3.5vw, 44px);
+  font-weight: 700;
+  line-height: 1.1;
+  letter-spacing: -0.8px;
+  color: var(--c-text);
+}
+
+h3 {
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--c-text);
+  line-height: 1.3;
+}
+
+p { font-size: 14px; line-height: 1.65; color: var(--c-text2); }
+
+/* GLASS PANEL */
+.glass {
+  background: var(--c-surface);
+  backdrop-filter: blur(24px);
+  border: 1px solid var(--c-border);
+  border-radius: 16px;
+}
+
+/* ===== S1: COVER ===== */
+.s1 {
+  flex-direction: column;
+  text-align: center;
+  gap: 0;
+}
+.s1 .blob.b1 { width: 500px; height: 500px; background: var(--c-gold); top: 30%; left: 40%; }
+.s1 .blob.b2 { width: 400px; height: 400px; background: var(--c-teal); top: 50%; right: 30%; animation-delay: -4s; }
+
+.s1-tag {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px; font-weight: 500;
+  letter-spacing: 4px; text-transform: uppercase;
+  color: var(--c-text3);
+  margin-bottom: 24px;
+}
+
+.s1-logo {
+  margin-bottom: 20px;
+}
+
+.s1-title {
+  font-size: clamp(52px, 7vw, 96px);
+  font-weight: 900;
+  line-height: 0.92;
+  letter-spacing: -3px;
+  background: linear-gradient(135deg, var(--c-text) 0%, var(--c-text2) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  margin-bottom: 24px;
+}
+
+.s1-sub {
+  font-size: 17px;
+  font-weight: 300;
+  color: var(--c-text3);
+  max-width: 500px;
+  margin: 0 auto;
+  line-height: 1.6;
+}
+
+.s1-line {
+  width: 32px;
+  height: 1px;
+  background: var(--c-text3);
+  margin: 28px auto;
+}
+
+.s1-meta {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 9px;
+  color: rgba(255,255,255,0.15);
+  letter-spacing: 2px;
+  text-transform: uppercase;
+}
+
+/* ===== S2: PROBLEM ===== */
+.s2 { flex-direction: column; }
+.s2-layout {
+  display: grid;
+  grid-template-columns: 0.4fr 0.6fr;
+  gap: 48px;
+  align-items: start;
+  margin-top: 40px;
+}
+.s2-left h2 { margin-bottom: 16px; }
+.s2-left p { max-width: 320px; }
+
+.s2-items { display: flex; flex-direction: column; gap: 12px; }
+.s2-item {
+  padding: 20px 24px;
+  border-radius: 12px;
+  background: var(--c-surface);
+  border: 1px solid var(--c-border);
+  display: flex;
+  gap: 16px;
+  align-items: flex-start;
+  transition: border-color 0.3s;
+}
+.s2-item:hover { border-color: rgba(255,255,255,0.1); }
+.s2-icon {
+  width: 32px; height: 32px; border-radius: 8px;
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0;
+}
+.s2-icon svg { width: 16px; height: 16px; }
+.s2-item h3 { font-size: 14px; margin-bottom: 4px; }
+.s2-item p { font-size: 12px; color: var(--c-text3); line-height: 1.5; }
+
+/* ===== S3: GAP ===== */
+.s3 { flex-direction: column; }
+.s3 .blob.b1 { width: 400px; height: 400px; background: var(--c-violet); top: 20%; left: 10%; }
+.s3 .blob.b2 { width: 350px; height: 350px; background: var(--c-blue); bottom: 20%; right: 15%; animation-delay: -6s; }
+
+.s3-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+  margin-top: 36px;
+}
+
+.s3-card {
+  padding: 28px;
+  border-radius: 16px;
+}
+.s3-card.has {
+  background: rgba(20,184,166,0.06);
+  border: 1px solid rgba(20,184,166,0.12);
+}
+.s3-card.miss {
+  background: var(--c-surface);
+  border: 1px solid var(--c-border);
+}
+.s3-card-head {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 9px; font-weight: 600;
+  letter-spacing: 2px; text-transform: uppercase;
+  margin-bottom: 16px;
+}
+.s3-card.has .s3-card-head { color: var(--c-teal); }
+.s3-card.miss .s3-card-head { color: var(--c-rose); }
+.s3-card h3 { font-size: 15px; margin-bottom: 6px; }
+.s3-card p { font-size: 13px; }
+
+/* ===== S4: VISION ===== */
+.s4 {
+  flex-direction: column;
+  text-align: center;
+}
+.s4 .blob.b1 { width: 600px; height: 600px; background: var(--c-gold); top: 40%; left: 50%; }
+
+.s4-quote {
+  font-size: clamp(24px, 3vw, 38px);
+  font-weight: 300;
+  color: var(--c-text2);
+  line-height: 1.4;
+  max-width: 720px;
+  margin: 32px auto 0;
+  letter-spacing: -0.3px;
+}
+.s4-quote strong {
+  color: var(--c-text);
+  font-weight: 700;
+}
+
+.s4-stats {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1px;
+  margin-top: 48px;
+  border-radius: 16px;
+  overflow: hidden;
+  background: var(--c-border);
+}
+.s4-stat {
+  padding: 28px;
+  background: var(--c-surface);
+  backdrop-filter: blur(20px);
+  text-align: center;
+}
+.s4-num {
+  font-size: clamp(32px, 4vw, 48px);
+  font-weight: 800;
+  letter-spacing: -1px;
+  line-height: 1;
+  margin-bottom: 6px;
+}
+.s4-stat:nth-child(1) .s4-num { color: var(--c-gold); }
+.s4-stat:nth-child(2) .s4-num { color: var(--c-teal); }
+.s4-stat:nth-child(3) .s4-num { color: var(--c-blue); }
+.s4-lbl { font-size: 12px; color: var(--c-text3); }
+
+/* ===== S5: WHAT ===== */
+.s5 { flex-direction: column; }
+.s5-split {
+  display: grid;
+  grid-template-columns: 1fr 1.2fr;
+  gap: 32px;
+  margin-top: 36px;
+  align-items: center;
+}
+.s5-left h2 { margin-bottom: 12px; }
+.s5-left p { max-width: 400px; }
+
+.s5-compare { border-radius: 16px; overflow: hidden; border: 1px solid var(--c-border); display: grid; grid-template-columns: 1fr 1fr; }
+.s5-col { }
+.s5-col.before { background: rgba(244,63,94,0.04); }
+.s5-col.after { background: rgba(20,184,166,0.04); }
+.s5-col-head {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 9px; font-weight: 600;
+  letter-spacing: 2px; text-transform: uppercase;
+  padding: 12px 24px;
+}
+.s5-col.before .s5-col-head { color: var(--c-rose); background: rgba(244,63,94,0.06); }
+.s5-col.after .s5-col-head { color: var(--c-teal); background: rgba(20,184,166,0.06); }
+.s5-col-body { padding: 20px 24px; }
+.s5-feat { display: flex; align-items: center; gap: 10px; padding: 8px 0; font-size: 13px; color: var(--c-text2); }
+.s5-dot { width: 5px; height: 5px; border-radius: 50%; flex-shrink: 0; }
+
+/* ===== S6: FIELDS ===== */
+.s6 { flex-direction: column; }
+.s6-cols {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1px;
+  margin-top: 36px;
+  border-radius: 16px;
+  overflow: hidden;
+  background: var(--c-border);
+}
+.s6-col {
+  padding: 28px 24px;
+  background: var(--c-bg2);
+}
+.s6-col-icon {
+  width: 36px; height: 36px; border-radius: 10px;
+  display: flex; align-items: center; justify-content: center;
+  margin-bottom: 16px;
+}
+.s6-col-icon svg { width: 22px; height: 22px; }
+.s6-col h3 { font-size: 14px; margin-bottom: 14px; }
+.s6-field {
+  display: flex; align-items: center; gap: 10px;
+  padding: 7px 0;
+  font-size: 12px; color: var(--c-text3);
+}
+.s6-bar { width: 14px; height: 2px; border-radius: 1px; flex-shrink: 0; }
+
+/* ===== S7: FEATURES ===== */
+.s7 { flex-direction: column; }
+.s7-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 12px;
+  margin-top: 32px;
+}
+.s7-feat {
+  padding: 24px;
+  border-radius: 14px;
+  background: var(--c-surface);
+  border: 1px solid var(--c-border);
+  display: flex;
+  gap: 16px;
+  align-items: flex-start;
+  transition: border-color 0.3s;
+}
+.s7-feat:hover { border-color: rgba(255,255,255,0.1); }
+.s7-feat-icon {
+  width: 36px; height: 36px; border-radius: 10px;
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0;
+}
+.s7-feat-icon svg { width: 20px; height: 20px; }
+.s7-feat h3 { font-size: 13px; margin-bottom: 4px; }
+.s7-feat p { font-size: 12px; color: var(--c-text3); line-height: 1.5; }
+
+/* ===== S8: SCOPE ===== */
+.s8 { flex-direction: column; }
+.s8-split {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1px;
+  margin-top: 32px;
+  border-radius: 16px;
+  overflow: hidden;
+  background: var(--c-border);
+}
+.s8-col { padding: 28px; background: var(--c-bg2); }
+.s8-col-head {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px; font-weight: 600;
+  letter-spacing: 2px; text-transform: uppercase;
+  margin-bottom: 16px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid var(--c-border);
+}
+.s8-col.do .s8-col-head { color: var(--c-teal); }
+.s8-col.out .s8-col-head { color: var(--c-text3); }
+.s8-item {
+  display: flex; align-items: center; gap: 10px;
+  padding: 9px 0;
+  font-size: 13px; color: var(--c-text2);
+  border-bottom: 1px solid var(--c-border);
+}
+.s8-item:last-child { border-bottom: none; }
+.s8-num {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px; font-weight: 600;
+  width: 22px; height: 22px; border-radius: 6px;
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0;
+}
+.s8-col.do .s8-num { background: rgba(20,184,166,0.1); color: var(--c-teal); }
+.s8-col.out .s8-num { background: var(--c-surface); color: var(--c-text3); }
+
+/* ===== S9: TIMELINE ===== */
+.s9 { flex-direction: column; }
+.s9-track {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 1px;
+  margin-top: 40px;
+  border-radius: 16px;
+  overflow: hidden;
+  background: var(--c-border);
+}
+.s9-phase {
+  padding: 28px 20px;
+  background: var(--c-bg2);
+  text-align: center;
+  position: relative;
+}
+.s9-phase::after {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 3px;
+}
+.s9-phase:nth-child(1)::after { background: var(--c-gold); }
+.s9-phase:nth-child(2)::after { background: var(--c-teal); }
+.s9-phase:nth-child(3)::after { background: var(--c-blue); }
+.s9-phase:nth-child(4)::after { background: var(--c-violet); }
+.s9-num {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px; font-weight: 600;
+  letter-spacing: 1px;
+  margin-bottom: 12px;
+}
+.s9-phase:nth-child(1) .s9-num { color: var(--c-gold); }
+.s9-phase:nth-child(2) .s9-num { color: var(--c-teal); }
+.s9-phase:nth-child(3) .s9-num { color: var(--c-blue); }
+.s9-phase:nth-child(4) .s9-num { color: var(--c-violet); }
+.s9-phase h3 { font-size: 14px; margin-bottom: 8px; }
+.s9-phase p { font-size: 11px; color: var(--c-text3); line-height: 1.5; }
+.s9-dur {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px; color: var(--c-text3);
+  margin-top: 12px;
+  padding: 4px 10px;
+  border-radius: 20px;
+  background: var(--c-surface);
+  display: inline-block;
+}
+
+/* ===== S10: INVESTMENT ===== */
+.s10 { flex-direction: column; text-align: center; }
+.s10 .blob.b1 { width: 400px; height: 400px; background: var(--c-gold); top: 40%; left: 50%; }
+.s10-card {
+  max-width: 640px;
+  margin: 36px auto 0;
+  padding: 40px;
+  border-radius: 20px;
+  background: var(--c-surface);
+  border: 1px solid var(--c-border);
+  backdrop-filter: blur(24px);
+}
+.s10-amount {
+  font-size: clamp(40px, 5vw, 60px);
+  font-weight: 900;
+  color: var(--c-gold);
+  letter-spacing: -2px;
+  margin: 16px 0 8px;
+}
+.s10-note {
+  font-size: 13px;
+  color: var(--c-text3);
+  max-width: 420px;
+  margin: 0 auto 28px;
+  line-height: 1.6;
+}
+.s10-items {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+  text-align: left;
+}
+.s10-item {
+  padding: 16px;
+  border-radius: 12px;
+  background: rgba(255,255,255,0.02);
+  border: 1px solid var(--c-border);
+}
+.s10-item h4 { font-size: 12px; font-weight: 600; margin-bottom: 4px; }
+.s10-item p { font-size: 11px; color: var(--c-text3); line-height: 1.4; }
+
+/* ===== S11: WHY US ===== */
+.s11 { flex-direction: column; }
+.s11-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 12px;
+  margin-top: 32px;
+}
+.s11-card {
+  padding: 24px;
+  border-radius: 14px;
+  background: var(--c-surface);
+  border: 1px solid var(--c-border);
+}
+.s11-card h3 {
+  font-size: 14px; margin-bottom: 8px;
+  display: flex; align-items: center; gap: 8px;
+}
+.s11-card p { font-size: 12px; line-height: 1.6; }
+.s11-icon {
+  width: 24px; height: 24px; border-radius: 6px;
+  display: inline-flex; align-items: center; justify-content: center;
+  flex-shrink: 0;
+}
+.s11-icon svg { width: 16px; height: 16px; }
+
+/* ===== S12: NEXT STEPS ===== */
+.s12 { flex-direction: column; text-align: center; }
+.s12-steps {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+  margin-top: 36px;
+}
+.s12-step {
+  padding: 28px 20px;
+  border-radius: 14px;
+  background: var(--c-surface);
+  border: 1px solid var(--c-border);
+}
+.s12-step-num {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 24px; font-weight: 700;
+  color: var(--c-gold);
+  margin-bottom: 12px;
+}
+.s12-step h3 { font-size: 14px; margin-bottom: 6px; }
+.s12-step p { font-size: 12px; color: var(--c-text3); line-height: 1.5; }
+.s12-btn {
+  display: inline-flex; align-items: center; gap: 8px;
+  margin-top: 32px; padding: 14px 32px;
+  border-radius: 100px;
+  background: var(--c-gold);
+  color: var(--c-bg);
+  font-family: 'Inter', sans-serif;
+  font-size: 14px; font-weight: 700;
+  border: none; cursor: pointer;
+  transition: transform 0.3s, box-shadow 0.3s;
+}
+.s12-btn:hover { transform: scale(1.03); box-shadow: 0 8px 32px rgba(234,179,8,0.25); }
+
+/* ===== S13: THANKS ===== */
+.s13 { flex-direction: column; text-align: center; }
+.s13 .blob.b1 { width: 500px; height: 500px; background: var(--c-gold); top: 40%; left: 50%; }
+.s13 h1 {
+  font-size: clamp(40px, 5vw, 64px);
+  background: linear-gradient(135deg, var(--c-text), var(--c-text2));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+.s13-sub {
+  font-size: 16px; color: var(--c-text3);
+  max-width: 440px; margin: 16px auto 0;
+  line-height: 1.6;
+}
+.s13-line { width: 32px; height: 1px; background: var(--c-text3); margin: 28px auto; }
+.s13-contact { font-size: 12px; color: rgba(255,255,255,0.2); line-height: 1.8; }
+.s13-footer {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 8px; color: rgba(255,255,255,0.1);
+  letter-spacing: 2px; text-transform: uppercase;
+  margin-top: 24px;
+}
+
+/* ===== MEMBERSHIP & REWARDS ===== */
+.s-rewards { flex-direction: column; }
+.rewards-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-top: 32px; }
+.rewards-left { display: flex; flex-direction: column; gap: 16px; }
+.reward-tier { padding: 20px 24px; border-radius: 14px; background: var(--c-surface); border: 1px solid var(--c-border); display: flex; align-items: center; gap: 16px; transition: border-color 0.3s; }
+.reward-tier:hover { border-color: rgba(255,255,255,0.1); }
+.reward-icon { width: 48px; height: 48px; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 22px; flex-shrink: 0; }
+.reward-icon.t-bronze { background: rgba(205,127,50,0.12); }
+.reward-icon.t-silver { background: rgba(192,192,192,0.12); }
+.reward-icon.t-gold { background: rgba(234,179,8,0.12); }
+.reward-icon.t-diamond { background: rgba(139,92,246,0.12); }
+.reward-info h3 { font-size: 15px; color: var(--c-text); margin-bottom: 2px; }
+.reward-info p { font-size: 11px; color: var(--c-text3); line-height: 1.4; }
+.reward-info .reward-pts { font-family: 'JetBrains Mono', monospace; font-size: 10px; color: var(--c-gold); }
+.rewards-right { display: flex; flex-direction: column; gap: 12px; }
+.points-card { padding: 20px 24px; border-radius: 14px; background: var(--c-surface); border: 1px solid var(--c-border); }
+.points-card h3 { font-size: 14px; color: var(--c-text); margin-bottom: 12px; display: flex; align-items: center; gap: 8px; }
+.points-row { display: flex; align-items: center; justify-content: space-between; padding: 7px 0; border-bottom: 1px solid var(--c-border); font-size: 12px; }
+.points-row:last-child { border-bottom: none; }
+.points-action { color: var(--c-text2); }
+.points-val { font-family: 'JetBrains Mono', monospace; color: var(--c-gold); font-weight: 600; }
+.commission-card { padding: 20px 24px; border-radius: 14px; background: rgba(131,106,232,0.06); border: 1px solid rgba(131,106,232,0.12); }
+.commission-card h3 { font-size: 14px; color: var(--c-text); margin-bottom: 8px; display: flex; align-items: center; gap: 8px; }
+.commission-card p { font-size: 12px; color: var(--c-text2); line-height: 1.5; }
+.commission-highlight { font-family: 'JetBrains Mono', monospace; font-size: 13px; color: #836ae8; font-weight: 600; }
+
+/* ===== PRICING ===== */
+.s-pricing { flex-direction: column; text-align: center; }
+.pricing-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1px; margin-top: 32px; border-radius: 16px; overflow: hidden; background: var(--c-border); }
+.pricing-col { padding: 28px 24px; background: var(--c-bg2); text-align: center; position: relative; }
+.pricing-col.featured { background: rgba(131,106,232,0.06); }
+.pricing-col.featured::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px; background: #836ae8; }
+.pricing-name { font-family: 'JetBrains Mono', monospace; font-size: 10px; font-weight: 600; letter-spacing: 2px; text-transform: uppercase; color: var(--c-text3); margin-bottom: 12px; }
+.pricing-col.featured .pricing-name { color: #836ae8; }
+.pricing-price { font-size: clamp(28px, 3vw, 36px); font-weight: 800; color: var(--c-text); margin-bottom: 4px; }
+.pricing-period { font-size: 11px; color: var(--c-text3); margin-bottom: 16px; }
+.pricing-features { text-align: left; }
+.pricing-feat { display: flex; align-items: center; gap: 8px; padding: 6px 0; font-size: 12px; color: var(--c-text2); }
+.pricing-feat svg { width: 14px; height: 14px; flex-shrink: 0; }
+.pricing-revenue { display: flex; gap: 24px; justify-content: center; margin-top: 8px; flex-wrap: wrap; }
+
+/* ===== S2: ABOUT SALAM ===== */
+.s-about { flex-direction: column; }
+.s-about-layout {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 48px;
+  align-items: center;
+  margin-top: 40px;
+}
+.s-about-logo {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 48px;
+  border-radius: 20px;
+  background: var(--c-surface);
+  border: 1px solid var(--c-border);
+}
+.s-about-text h2 { margin-bottom: 16px; }
+.s-about-text p { margin-bottom: 12px; }
+.about-tags { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 20px; }
+.about-tag {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px; font-weight: 500;
+  letter-spacing: 1.5px; text-transform: uppercase;
+  padding: 8px 16px;
+  border-radius: 8px;
+  background: var(--c-surface);
+  border: 1px solid var(--c-border);
+  color: var(--c-text3);
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+.about-tag.website {
+  background: rgba(131,106,232,0.08);
+  border-color: rgba(131,106,232,0.2);
+  color: #836ae8;
+}
+
+/* RESPONSIVE */
+@media (max-width: 900px) {
+  body { overflow-x: hidden; overflow-y: auto; height: auto; min-height: 100vh; }
+  .deck { height: auto; min-height: 100vh; }
+  .slide:not(.on) { display: none !important; }
+  .slide.on { position: relative; inset: auto; min-height: 100vh; padding: 32px 32px 100px; overflow-y: visible; overflow-x: hidden; box-sizing: border-box; align-items: flex-start; justify-content: flex-start; }
+  .slide.s1.on { align-items: center; justify-content: center; padding-bottom: 80px; }
+  .slide.s13.on { align-items: center; justify-content: center; padding-bottom: 80px; }
+  .inner { max-width: 100%; }
+  img { max-width: 100%; height: auto; }
+  .s1-title { font-size: clamp(36px, 8vw, 64px); letter-spacing: -2px; }
+  .s1-sub { font-size: 15px; }
+  .s2-layout { grid-template-columns: 1fr; gap: 24px; }
+  .s2-items { margin-top: 8px; }
+  .s-about-layout { grid-template-columns: 1fr; gap: 24px; }
+  .s-about-logo { padding: 32px; }
+  .s3-grid { grid-template-columns: 1fr; }
+  .s4-quote { font-size: clamp(18px, 3vw, 28px); }
+  .s4-stats { grid-template-columns: 1fr; }
+  .s5-split { grid-template-columns: 1fr; gap: 24px; }
+  .s5-compare { grid-template-columns: 1fr; }
+  .s5-col-body { padding: 16px; }
+  .s6-cols { grid-template-columns: 1fr; }
+  .s7-grid { grid-template-columns: 1fr; }
+  .s8-split { grid-template-columns: 1fr; }
+  .s9-track { grid-template-columns: 1fr; }
+  .s11-grid { grid-template-columns: 1fr; }
+  .s12-steps { grid-template-columns: 1fr; }
+  .rewards-grid { grid-template-columns: 1fr; gap: 16px; }
+  .pricing-grid { grid-template-columns: 1fr; }
+  .pricing-feat { font-size: 13px; padding: 8px 0; }
+}
+@media (max-width: 600px) {
+  body { overflow-x: hidden; overflow-y: auto; height: auto; min-height: 100dvh; }
+  .deck { height: auto; min-height: 100dvh; }
+  .slide:not(.on) { display: none !important; }
+  .slide.on { position: relative; inset: auto; min-height: 100dvh; padding: 24px 20px 120px; overflow-y: visible; overflow-x: hidden; box-sizing: border-box; align-items: flex-start; justify-content: flex-start; }
+  .slide.s1.on { align-items: center; justify-content: center; padding-bottom: 100px; }
+  .slide.s13.on { align-items: center; justify-content: center; padding-bottom: 100px; }
+  .inner { max-width: 100%; padding: 0; box-sizing: border-box; min-height: 0; }
+  img { max-width: 100%; height: auto; }
+  .s1-title { font-size: clamp(28px, 10vw, 48px); letter-spacing: -1.5px; }
+  .s1-sub { font-size: 14px; }
+  .s1-logo img { height: 36px !important; }
+  h1 { font-size: clamp(28px, 8vw, 48px); letter-spacing: -1px; }
+  h2 { font-size: clamp(20px, 5vw, 32px); letter-spacing: -0.5px; }
+  h3 { font-size: 14px; }
+  p { font-size: 13px; }
+  .label { font-size: 9px; letter-spacing: 2px; }
+  .s-about-logo img { height: 56px !important; }
+  .s-about-text h2 { font-size: clamp(20px, 5vw, 28px); }
+  .about-tags { gap: 8px; }
+  .about-tag { font-size: 9px; padding: 6px 12px; }
+  .s2-left { margin-bottom: 8px; }
+  .s3-card { padding: 20px 16px; }
+  .s4-quote { font-size: clamp(16px, 4vw, 22px); }
+  .s4-num { font-size: clamp(24px, 6vw, 36px); }
+  .s4-stat { padding: 20px 16px; }
+  .s5-left { margin-bottom: 8px; }
+  .s5-col-body { padding: 14px; }
+  .s5-feat { font-size: 12px; }
+  .s6-col { padding: 16px 14px; }
+  .s6-col-icon { width: 32px; height: 32px; }
+  .s6-col-icon svg { width: 18px; height: 18px; }
+  .s6-field { font-size: 11px; }
+  .s7-feat { padding: 14px; }
+  .s7-feat-icon { width: 32px; height: 32px; }
+  .s7-feat-icon svg { width: 18px; height: 18px; }
+  .s8-col { padding: 16px 14px; }
+  .s8-item { font-size: 12px; }
+  .s9-phase { padding: 16px 14px; }
+  .s11-card { padding: 16px; }
+  .s11-icon { width: 20px; height: 20px; }
+  .s11-icon svg { width: 12px; height: 12px; }
+  .s12-step { padding: 16px 14px; }
+  .reward-tier { padding: 12px 14px; }
+  .reward-icon { width: 40px; height: 40px; font-size: 18px; }
+  .reward-info h3 { font-size: 14px; }
+  .points-card { padding: 14px; }
+  .commission-card { padding: 14px; }
+  .pricing-col { padding: 16px 14px; }
+  .pricing-price { font-size: 28px; }
+  .pricing-revenue { flex-direction: column; gap: 8px; align-items: center; }
+  .nav { height: 36px; padding: 0 14px; }
+  .dots { gap: 2px; }
+  .dot { width: 3px; height: 3px; }
+  .dot.on { width: 12px; }
+}
+</style>
+</head>
+<body>
+
+<div class="prog" id="prog"></div>
+<div class="deck" id="deck">
+
+  <!-- S1: COVER -->
+  <div class="slide s1 on" data-s="1">
+    <div class="blob b1"></div>
+    <div class="blob b2"></div>
+    <div class="s1-logo rv">
+      <img src="https://salampay.me/salam-logo.svg" alt="Salam" style="height:48px;width:auto;">
+    </div>
+    <div class="s1-tag rv d1">BUSINESS PROPOSAL · JUN 2026</div>
+    <div class="s1-title rv d2">Business<br>Sustainability<br>Network</div>
+    <div class="s1-line rv d3"></div>
+    <div class="s1-sub rv d4">Sistem Profiling Perniagaan Alumni BSS — memperkasakan networking, referral, dan pertumbuhan bisnes dalam komuniti Annems.</div>
+    <div class="s1-meta rv d5">UNTUK ANNEMS LEADERSHIP SOLUTION SDN BHD</div>
+  </div>
+
+  <!-- S2: ABOUT SALAM -->
+  <div class="slide s-about" data-s="2">
+    <div class="inner">
+      <div class="label rv">TENTANG KAMI</div>
+      <div class="s-about-layout">
+        <div class="s-about-logo rv d1">
+          <img src="https://salampay.me/salam-logo.svg" alt="Salam Payment Solutions" style="height:80px;width:auto;">
+        </div>
+        <div class="s-about-text">
+          <h2 class="rv d2">Salam Payment<br><span style="color:var(--c-gold)">Solutions Sdn Bhd</span></h2>
+          <p class="rv d3">Salam ialah syarikat teknologi yang berfokus kepada penyelesaian digital untuk PKS Malaysia. Dengan pemahaman mendalam tentang ekosistem perniagaan tempatan, Salam membantu organisasi seperti Annems memanfaatkan teknologi untuk meningkatkan nilai komuniti mereka.</p>
+          <p class="rv d4">Dalam projek BSN ini, Salam bertindak sebagai rakan teknologi yang akan membina dan melaksanakan sistem profiling perniagaan alumni BSS dari mula hingga siap.</p>
+          <div class="about-tags rv d5">
+            <a href="https://salampay.me" target="_blank" style="text-decoration:none;">
+              <div class="about-tag website">https://salampay.me ↗</div>
+            </a>
+            <div class="about-tag">Technology Partner</div>
+            <div class="about-tag">System Integrator</div>
+            <div class="about-tag">Digital Solutions</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- S3: PROBLEM -->
+  <div class="slide s2" data-s="3">
+    <div class="inner">
+      <div class="label rv">MASALAH</div>
+      <div class="s2-layout">
+        <div class="s2-left">
+          <h2 class="rv d1">1,000+ alumni.<br>Zero <span style="color:var(--c-gold)">profil</span>.</h2>
+          <p class="rv d2">Annems ada senarai nama, tapi tiada data perniagaan — siapa mereka, apa yang mereka jual, atau apa yang mereka perlukan.</p>
+        </div>
+        <div class="s2-items">
+          <div class="s2-item rv d3">
+            <div class="s2-icon" style="background:rgba(244,63,94,0.1)">
+              <svg viewBox="0 0 24 24" fill="none" stroke="#F43F5E" stroke-width="2" stroke-linecap="round"><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+            </div>
+            <div><h3>Hanya Senarai Nama</h3><p>Tiada data perniagaan — industri, produk, capacity, atau keperluan.</p></div>
+          </div>
+          <div class="s2-item rv d4">
+            <div class="s2-icon" style="background:rgba(234,179,8,0.1)">
+              <svg viewBox="0 0 24 24" fill="none" stroke="#EAB308" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg>
+            </div>
+            <div><h3>Alumni Terputus</h3><p>Selepas 5 bulan BSS tamat, alumni hilang dari radar.</p></div>
+          </div>
+          <div class="s2-item rv d5">
+            <div class="s2-icon" style="background:rgba(139,92,246,0.1)">
+              <svg viewBox="0 0 24 24" fill="none" stroke="#8B5CF6" stroke-width="2" stroke-linecap="round"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg>
+            </div>
+            <div><h3>Peluang Terbazir</h3><p>Dua alumni mungkin saling memerlukan tapi tak pernah tahu.</p></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- S3: GAP -->
+  <div class="slide s3" data-s="3">
+    <div class="blob b1"></div>
+    <div class="blob b2"></div>
+    <div class="inner">
+      <div class="label rv" style="text-align:center;">KENAPA SALAM?</div>
+      <h2 class="rv d1" style="text-align:center;margin-top:16px;">Annems ada <span style="color:var(--c-gold)">expertise coaching</span>.<br>Salam ada <span style="color:var(--c-teal)">expertise teknologi</span>.</h2>
+      <div class="s3-grid">
+        <div class="s3-card has rv d2">
+          <div class="s3-card-head">YANG ANNEMS ADA</div>
+          <h3>Program BSS, methodology, coaching</h3>
+          <p>5 bulan intensif, 5 modul (Organs), 1,000+ alumni network, dan trust yang telah terbina.</p>
+        </div>
+        <div class="s3-card has rv d3">
+          <div class="s3-card-head">YANG ANNEMS ADA</div>
+          <h3>Trust & bonding antara batch</h3>
+          <p>Peserta telah bersama dalam program intensif — hubungan dan kepercayaan sudah wujud.</p>
+        </div>
+        <div class="s3-card miss rv d4">
+          <div class="s3-card-head">YANG ANNEMS TAK ADA</div>
+          <h3>Sistem profiling perniagaan</h3>
+          <p>Tiada cara structured untuk mengumpul dan mengurus data perniagaan setiap alumni.</p>
+        </div>
+        <div class="s3-card miss rv d5">
+          <div class="s3-card-head">YANG ANNEMS TAK ADA</div>
+          <h3>Platform digital networking</h3>
+          <p>Tiada direktori, tiada needs board, tiada cara untuk alumni connect selepas BSS.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- S4: VISION -->
+  <div class="slide s4" data-s="4">
+    <div class="blob b1"></div>
+    <div class="inner">
+      <div class="label rv" style="text-align:center;">VISI</div>
+      <div class="s4-quote rv d1">
+        Bayangkan jika semua alumni BSS boleh <strong>cari supplier</strong>, jumpa <strong>buyer baharu</strong>, temui <strong>rakan niaga</strong>, dan <strong>refer antara satu sama lain</strong>.
+      </div>
+      <div class="s4-stats rv d2">
+        <div class="s4-stat">
+          <div class="s4-num" data-count="1000">0</div>
+          <div class="s4-lbl">Alumni BSS</div>
+        </div>
+        <div class="s4-stat">
+          <div class="s4-num" data-count="21">0</div>
+          <div class="s4-lbl">Batch Diluluskan</div>
+        </div>
+        <div class="s4-stat">
+          <div class="s4-num" data-count="500">0</div>
+          <div class="s4-lbl">Potensi Referral/Tahun</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- S5: WHAT -->
+  <div class="slide s5" data-s="5">
+    <div class="inner">
+      <div class="label rv">APA ITU PROFILING</div>
+      <div class="s5-split">
+        <div class="s5-left">
+          <h2 class="rv d1">Bukan kad nama.<br><span style="color:var(--c-gold)">Gambaran penuh</span> bisnes.</h2>
+          <p class="rv d2">Profiling ini macam "kad nama digital" yang jauh lebih powerful — identiti, produk, capacity, keperluan, dan tawaran dalam satu profil.</p>
+        </div>
+        <div class="s5-compare rv d3">
+          <div class="s5-col before">
+            <div class="s5-col-head">KAD NAMA BIASA</div>
+            <div class="s5-col-body">
+              <div class="s5-feat"><div class="s5-dot" style="background:var(--c-rose)"></div>Nama & jawatan</div>
+              <div class="s5-feat"><div class="s5-dot" style="background:var(--c-rose)"></div>Nombor telefon</div>
+              <div class="s5-feat"><div class="s5-dot" style="background:var(--c-rose)"></div>Email</div>
+            </div>
+          </div>
+          <div class="s5-col after">
+            <div class="s5-col-head">PROFIL BSN</div>
+            <div class="s5-col-body">
+              <div class="s5-feat"><div class="s5-dot" style="background:var(--c-teal)"></div>Identiti penuh — industri, lokasi, revenue</div>
+              <div class="s5-feat"><div class="s5-dot" style="background:var(--c-teal)"></div>Produk, sijil, capacity, target pasar</div>
+              <div class="s5-feat"><div class="s5-dot" style="background:var(--c-teal)"></div>Keperluan & tawaran perniagaan</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- S6: FIELDS -->
+  <div class="slide s6" data-s="6">
+    <div class="inner">
+      <div class="label rv" style="text-align:center;">DATA YANG DIKUMPUL</div>
+      <h2 class="rv d1" style="text-align:center;margin-top:16px;">Tiga kategori utama</h2>
+      <div class="s6-cols">
+        <div class="s6-col rv d2">
+          <div class="s6-col-icon" style="background:rgba(234,179,8,0.1)">
+            <svg viewBox="0 0 24 24" fill="none" stroke="#EAB308" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg>
+          </div>
+          <h3>Identiti Perniagaan</h3>
+          <div class="s6-field"><div class="s6-bar" style="background:var(--c-gold)"></div>Nama syarikat & SSM</div>
+          <div class="s6-field"><div class="s6-bar" style="background:var(--c-gold)"></div>Industri & sub-sektor</div>
+          <div class="s6-field"><div class="s6-bar" style="background:var(--c-gold)"></div>Lokasi HQ & operasi</div>
+          <div class="s6-field"><div class="s6-bar" style="background:var(--c-gold)"></div>Tahun ditubuh & staff</div>
+          <div class="s6-field"><div class="s6-bar" style="background:var(--c-gold)"></div>Revenue tahunan</div>
+        </div>
+        <div class="s6-col rv d3">
+          <div class="s6-col-icon" style="background:rgba(20,184,166,0.1)">
+            <svg viewBox="0 0 24 24" fill="none" stroke="#14B8A6" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/><polyline points="3.27 6.96 12 12.01 20.73 6.96"/><line x1="12" y1="22.08" x2="12" y2="12"/></svg>
+          </div>
+          <h3>Produk & Perkhidmatan</h3>
+          <div class="s6-field"><div class="s6-bar" style="background:var(--c-teal)"></div>Deskripsi ringkas bisnes</div>
+          <div class="s6-field"><div class="s6-bar" style="background:var(--c-teal)"></div>Senarai produk / service</div>
+          <div class="s6-field"><div class="s6-bar" style="background:var(--c-teal)"></div>Sijil (Halal, ISO, dll)</div>
+          <div class="s6-field"><div class="s6-bar" style="background:var(--c-teal)"></div>Capacity & skala operasi</div>
+          <div class="s6-field"><div class="s6-bar" style="background:var(--c-teal)"></div>Website & social media</div>
+        </div>
+        <div class="s6-col rv d4">
+          <div class="s6-col-icon" style="background:rgba(59,130,246,0.1)">
+            <svg viewBox="0 0 24 24" fill="none" stroke="#3B82F6" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+          </div>
+          <h3>Permintaan & Tawaran</h3>
+          <div class="s6-field"><div class="s6-bar" style="background:var(--c-blue)"></div>Mencari supplier?</div>
+          <div class="s6-field"><div class="s6-bar" style="background:var(--c-blue)"></div>Mencari buyer / distributor?</div>
+          <div class="s6-field"><div class="s6-bar" style="background:var(--c-blue)"></div>Mencari rakan niaga (JV)?</div>
+          <div class="s6-field"><div class="s6-bar" style="background:var(--c-blue)"></div>Mencari pelabur?</div>
+          <div class="s6-field"><div class="s6-bar" style="background:var(--c-blue)"></div>Ada capacity lebih untuk ditawarkan?</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- S7: FEATURES -->
+  <div class="slide s7" data-s="7">
+    <div class="inner">
+      <div class="label rv">CIRI-CIRI UTAMA</div>
+      <h2 class="rv d1" style="margin-top:16px;">Apa yang <span style="color:var(--c-gold)">akan dibina</span></h2>
+      <div class="s7-grid">
+        <div class="s7-feat rv d2">
+          <div class="s7-feat-icon" style="background:rgba(234,179,8,0.1)">
+            <svg viewBox="0 0 24 24" fill="none" stroke="#EAB308" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+          </div>
+          <div><h3>Business Profile Form</h3><p>Form berstruktur untuk alumni isi profil perniagaan lengkap.</p></div>
+        </div>
+        <div class="s7-feat rv d3">
+          <div class="s7-feat-icon" style="background:rgba(20,184,166,0.1)">
+            <svg viewBox="0 0 24 24" fill="none" stroke="#14B8A6" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3"/><path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"/></svg>
+          </div>
+          <div><h3>Profile Database</h3><p>Database terpusat — konsisten, mudah diurus, dan selamat.</p></div>
+        </div>
+        <div class="s7-feat rv d4">
+          <div class="s7-feat-icon" style="background:rgba(59,130,246,0.1)">
+            <svg viewBox="0 0 24 24" fill="none" stroke="#3B82F6" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+          </div>
+          <div><h3>Searchable Directory</h3><p>Cari alumni mengikut industri, lokasi, produk, atau keperluan.</p></div>
+        </div>
+        <div class="s7-feat rv d5">
+          <div class="s7-feat-icon" style="background:rgba(139,92,246,0.1)">
+            <svg viewBox="0 0 24 24" fill="none" stroke="#8B5CF6" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+          </div>
+          <div><h3>Profile View</h3><p>Lihat profil lengkap mana-mana alumni dalam satu halaman.</p></div>
+        </div>
+        <div class="s7-feat rv d6">
+          <div class="s7-feat-icon" style="background:rgba(244,63,94,0.1)">
+            <svg viewBox="0 0 24 24" fill="none" stroke="#F43F5E" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+          </div>
+          <div><h3>Needs Board</h3><p>Papan permintaan — post "Saya mencari X", ahli lain respond.</p></div>
+        </div>
+        <div class="s7-feat rv d7">
+          <div class="s7-feat-icon" style="background:rgba(139,92,246,0.1)">
+            <svg viewBox="0 0 24 24" fill="none" stroke="#8B5CF6" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+          </div>
+          <div><h3>Offer Board</h3><p>Papan tawaran — post capacity atau servis untuk komuniti.</p></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- MEMBERSHIP & REWARDS -->
+  <div class="slide s-rewards" data-s="8">
+    <div class="inner">
+      <div class="label rv">MEMBERSHIP & REWARDS</div>
+      <h2 class="rv d1" style="margin-top:16px;">Points, ranking, dan <span class="gold">referral commission</span></h2>
+      <div class="rewards-grid">
+        <div class="rewards-left">
+          <div class="reward-tier rv d2">
+            <div class="reward-icon t-bronze">🥉</div>
+            <div class="reward-info">
+              <h3>Rakan</h3>
+              <div class="reward-pts">0 – 499 pts</div>
+              <p>Basic member — join directory, view profil alumni</p>
+            </div>
+          </div>
+          <div class="reward-tier rv d3">
+            <div class="reward-icon t-silver">🥈</div>
+            <div class="reward-info">
+              <h3>Mitra</h3>
+              <div class="reward-pts">500 – 1,999 pts</div>
+              <p>Active networker — post di boards, respon permintaan</p>
+            </div>
+          </div>
+          <div class="reward-tier rv d4">
+            <div class="reward-icon t-gold">🥇</div>
+            <div class="reward-info">
+              <h3>Usahawan</h3>
+              <div class="reward-pts">2,000 – 4,999 pts</div>
+              <p>Business builder — banyak referral & aktif networking</p>
+            </div>
+          </div>
+          <div class="reward-tier rv d5">
+            <div class="reward-icon t-diamond">💎</div>
+            <div class="reward-info">
+              <h3>Legenda</h3>
+              <div class="reward-pts">5,000+ pts</div>
+              <p>Top connector — featured dalam spotlight bulanan</p>
+            </div>
+          </div>
+        </div>
+        <div class="rewards-right">
+          <div class="points-card rv d3">
+            <h3>⚡ Cara Dapatkan Points</h3>
+            <div class="points-row"><span class="points-action">Lengkapkan profil</span><span class="points-val">+50</span></div>
+            <div class="points-row"><span class="points-action">Tambah business profile</span><span class="points-val">+100</span></div>
+            <div class="points-row"><span class="points-action">Post di Needs/Offer Board</span><span class="points-val">+10</span></div>
+            <div class="points-row"><span class="points-action">Respon post orang lain</span><span class="points-val">+5</span></div>
+            <div class="points-row"><span class="points-action">Referral register</span><span class="points-val">+200</span></div>
+            <div class="points-row"><span class="points-action">Referral join BSS</span><span class="points-val">+500</span></div>
+          </div>
+          <div class="commission-card rv d4">
+            <h3>💰 Referral Commission</h3>
+            <p>Refer rakan untuk register → dapat points. Rakan join BSS? Anda dapat <span class="commission-highlight">komisen tunai</span> terus ke akaun.</p>
+            <p style="margin-top:8px;font-size:11px;color:var(--c-text3);">Top referrers dipaparkan dalam leaderboard bulanan.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- S8: SCOPE -->
+  <div class="slide s8" data-s="9">
+    <div class="inner">
+      <div class="label rv" style="text-align:center;">SKOP KERJA</div>
+      <h2 class="rv d1" style="text-align:center;margin-top:16px;">Apa yang termasuk dan <span style="color:var(--c-gold)">tidak termasuk</span></h2>
+      <div class="s8-split">
+        <div class="s8-col do rv d2">
+          <div class="s8-col-head">FASA 1 — TERMASUK</div>
+          <div class="s8-item"><div class="s8-num">1</div>Business Profile Form (web-based)</div>
+          <div class="s8-item"><div class="s8-num">2</div>Profile Database & Management</div>
+          <div class="s8-item"><div class="s8-num">3</div>Searchable Alumni Directory</div>
+          <div class="s8-item"><div class="s8-num">4</div>Individual Profile View</div>
+          <div class="s8-item"><div class="s8-num">5</div>Needs & Offers Board</div>
+          <div class="s8-item"><div class="s8-num">6</div>Admin Dashboard untuk Annems</div>
+          <div class="s8-item"><div class="s8-num">7</div>Responsive web (desktop + mobile)</div>
+        </div>
+        <div class="s8-col out rv d3">
+          <div class="s8-col-head">FASA SETERUSNYA</div>
+          <div class="s8-item"><div class="s8-num">—</div>Native Mobile App</div>
+          <div class="s8-item"><div class="s8-num">—</div>Automated Matching Engine</div>
+          <div class="s8-item"><div class="s8-num">—</div>Referral Tracking System</div>
+          <div class="s8-item"><div class="s8-num">—</div>Payment & Billing</div>
+          <div class="s8-item"><div class="s8-num">—</div>Event Management</div>
+          <div class="s8-item"><div class="s8-num">—</div>Business Impact Analytics</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- S9: TIMELINE -->
+  <div class="slide s9" data-s="9">
+    <div class="inner">
+      <div class="label rv" style="text-align:center;">JADUAL PELAKSANAAN</div>
+      <h2 class="rv d1" style="text-align:center;margin-top:16px;">~12 minggu dari <span style="color:var(--c-gold)">discovery</span> ke <span style="color:var(--c-gold)">launch</span></h2>
+      <div class="s9-track">
+        <div class="s9-phase rv d2">
+          <div class="s9-num">01</div>
+          <h3>Discovery</h3>
+          <p>Kajian keperluan, UI/UX design, perancangan teknikal</p>
+          <div class="s9-dur">Minggu 1–2</div>
+        </div>
+        <div class="s9-phase rv d3">
+          <div class="s9-num">02</div>
+          <h3>Development</h3>
+          <p>Pembinaan profile form, database, directory system</p>
+          <div class="s9-dur">Minggu 3–8</div>
+        </div>
+        <div class="s9-phase rv d4">
+          <div class="s9-num">03</div>
+          <h3>Testing</h3>
+          <p>Ujian fungsian, ujian pengguna, pembetulan</p>
+          <div class="s9-dur">Minggu 9–10</div>
+        </div>
+        <div class="s9-phase rv d5">
+          <div class="s9-num">04</div>
+          <h3>Launch</h3>
+          <p>Deployment, onboarding batch pertama, sokongan</p>
+          <div class="s9-dur">Minggu 11–12</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- PRICING -->
+  <div class="slide s-pricing" data-s="11">
+    <div class="blob b1"></div>
+    <div class="inner">
+      <div class="label rv" style="text-align:center;">MODEL PERNIAGAAN</div>
+      <h2 class="rv d1" style="text-align:center;margin-top:16px;">Freemium model — <span class="gold">percuma untuk mula</span></h2>
+      <div class="pricing-grid">
+        <div class="pricing-col rv d2">
+          <div class="pricing-name">PERIBADI</div>
+          <div class="pricing-price" style="color:var(--c-teal);">Percuma</div>
+          <div class="pricing-period">Seumur hidup</div>
+          <div class="pricing-features">
+            <div class="pricing-feat"><svg viewBox="0 0 24 24" fill="none" stroke="#14B8A6" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>Join sebagai ahli peribadi</div>
+            <div class="pricing-feat"><svg viewBox="0 0 24 24" fill="none" stroke="#14B8A6" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>Lihat profil alumni lain</div>
+            <div class="pricing-feat"><svg viewBox="0 0 24 24" fill="none" stroke="#14B8A6" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>Join directory peribadi</div>
+            <div class="pricing-feat"><svg viewBox="0 0 24 24" fill="none" stroke="#14B8A6" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>Dapatkan points & ranking</div>
+          </div>
+        </div>
+        <div class="pricing-col featured rv d3">
+          <div class="pricing-name">PERNIAGAAN</div>
+          <div class="pricing-price" style="color:#836ae8;">RM 250</div>
+          <div class="pricing-period">/tahun</div>
+          <div class="pricing-features">
+            <div class="pricing-feat"><svg viewBox="0 0 24 24" fill="none" stroke="#836ae8" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>Business profile lengkap</div>
+            <div class="pricing-feat"><svg viewBox="0 0 24 24" fill="none" stroke="#836ae8" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>Muncul dalam carian directory</div>
+            <div class="pricing-feat"><svg viewBox="0 0 24 24" fill="none" stroke="#836ae8" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>Post di Needs & Offer Board</div>
+            <div class="pricing-feat"><svg viewBox="0 0 24 24" fill="none" stroke="#836ae8" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>Smart matching & referral</div>
+          </div>
+        </div>
+        <div class="pricing-col rv d4">
+          <div class="pricing-name">BSS ALUMNI</div>
+          <div class="pricing-price" style="color:var(--c-gold);">Percuma*</div>
+          <div class="pricing-period">1 business / alumni</div>
+          <div class="pricing-features">
+            <div class="pricing-feat"><svg viewBox="0 0 24 24" fill="none" stroke="#EAB308" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>1 business profile percuma</div>
+            <div class="pricing-feat"><svg viewBox="0 0 24 24" fill="none" stroke="#EAB308" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>Semua ciri Business tier</div>
+            <div class="pricing-feat"><svg viewBox="0 0 24 24" fill="none" stroke="#EAB308" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>Tiket atas nama syarikat BSS</div>
+            <div class="pricing-feat"><svg viewBox="0 0 24 24" fill="none" stroke="#EAB308" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>Boleh tambah business lain (RM250/ea)</div>
+          </div>
+        </div>
+      </div>
+      <div style="margin-top:20px;" class="rv d5">
+        <div style="font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--c-text3);letter-spacing:1px;">ANGGARAN REVENUE RECURRING</div>
+        <div class="pricing-revenue">
+          <div style="font-size:13px;color:var(--c-text2);">200 businesses × RM250 = <span class="gold" style="font-weight:700;">RM50,000/tahun</span></div>
+          <div style="font-size:13px;color:var(--c-text2);">500 businesses × RM250 = <span class="gold" style="font-weight:700;">RM125,000/tahun</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- S11: WHY US -->
+  <div class="slide s11" data-s="11">
+    <div class="inner">
+      <div class="label rv">MENGAPA SALAM</div>
+      <h2 class="rv d1" style="margin-top:16px;">Kami <span style="color:var(--c-gold)">berbeza</span></h2>
+      <div class="s11-grid">
+        <div class="s11-card rv d2">
+          <h3><span class="s11-icon" style="background:rgba(234,179,8,0.1)"><svg viewBox="0 0 24 24" fill="none" stroke="#EAB308" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="3"/></svg></span>Fokus PKS</h3>
+          <p>Salam faham ekosistem PKS Malaysia — dari cabaran operasi hingga keperluan digital.</p>
+        </div>
+        <div class="s11-card rv d3">
+          <h3><span class="s11-icon" style="background:rgba(20,184,166,0.1)"><svg viewBox="0 0 24 24" fill="none" stroke="#14B8A6" stroke-width="2" stroke-linecap="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg></span>Delivery Pantas</h3>
+          <p>MVP-first approach. Satu masalah, satu solution, selesaikan dengan baik.</p>
+        </div>
+        <div class="s11-card rv d4">
+          <h3><span class="s11-icon" style="background:rgba(59,130,246,0.1)"><svg viewBox="0 0 24 24" fill="none" stroke="#3B82F6" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg></span>Data Security</h3>
+          <p>Encryption, access control, backup berkala — data alumni selamat.</p>
+        </div>
+        <div class="s11-card rv d5">
+          <h3><span class="s11-icon" style="background:rgba(139,92,246,0.1)"><svg viewBox="0 0 24 24" fill="none" stroke="#8B5CF6" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg></span>Partnership</h3>
+          <p>Bukan sekadar vendor — partner jangka panjang yang terus berkembang.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- S12: NEXT STEPS -->
+  <div class="slide s12" data-s="12">
+    <div class="inner" style="display:flex;flex-direction:column;align-items:center;">
+      <div class="label rv">LANGKAH SETERUSNYA</div>
+      <h2 class="rv d1" style="margin-top:16px;">Cara kita <span style="color:var(--c-gold)">mulakan</span></h2>
+      <div class="s12-steps">
+        <div class="s12-step rv d2">
+          <div class="s12-step-num">01</div>
+          <h3>Perbincangan</h3>
+          <p>Sesi 60 minit faham keperluan spesifik Annems</p>
+        </div>
+        <div class="s12-step rv d3">
+          <div class="s12-step-num">02</div>
+          <h3>Pengesahan Skop</h3>
+          <p>Finalisasi skop, deliverables, dan harga akhir</p>
+        </div>
+        <div class="s12-step rv d4">
+          <div class="s12-step-num">03</div>
+          <h3>MoU & Kickoff</h3>
+          <p>Persetujuan formal dan mula fasa pertama</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- S13: THANKS -->
+  <div class="slide s13" data-s="13">
+    <div class="blob b1"></div>
+    <div class="inner" style="display:flex;flex-direction:column;align-items:center;">
+      <div class="rv" style="margin-bottom:24px;">
+        <img src="https://salampay.me/salam-logo.svg" alt="Salam" style="height:40px;width:auto;">
+      </div>
+      <h1 class="rv d1">Terima Kasih</h1>
+      <div class="s13-sub rv d1">Salam berharap proposal ini memberi gambaran jelas tentang bagaimana BSN boleh memperkasakan komuniti alumni BSS.</div>
+      <div class="s13-line rv d2"></div>
+      <div class="s13-contact rv d3">
+        Oleh Salam Payment Solutions Sdn Bhd<br>
+        Untuk Annems Leadership Solution Sdn Bhd<br>
+        Jun 2026 · Versi 1.0
+      </div>
+      <div class="s13-footer rv d4">BUSINESS SUSTAINABILITY NETWORK · BSS ALUMNI PROFILING SYSTEM</div>
+    </div>
+  </div>
+
+</div>
+
+<div class="nav">
+  <div class="nav-l">
+    <div class="dots" id="dots"></div>
+    <div class="nav-ct"><b id="cur">01</b> / <span id="tot">15</span></div>
+  </div>
+  <div class="nav-r">
+    <button class="nb" onclick="go(-1)">◀</button>
+    <button class="nb" onclick="go(1)">▶</button>
+  </div>
+</div>
+
+<script>
+const S=document.querySelectorAll('.slide'),N=S.length;let c=0,b=false;
+function init(){const d=document.getElementById('dots');for(let i=0;i<N;i++){const e=document.createElement('div');e.className='dot'+(i===0?' on':'');e.onclick=()=>goTo(i);d.appendChild(e)}document.getElementById('tot').textContent=String(N).padStart(2,'0');up();anim()}
+function up(){document.getElementById('cur').textContent=String(c+1).padStart(2,'0');document.getElementById('prog').style.width=((c/(N-1))*100)+'%';document.querySelectorAll('.dot').forEach((d,i)=>d.classList.toggle('on',i===c))}
+function goTo(i){if(i===c||b||i<0||i>=N)return;b=true;S[c].classList.add('out');S[c].classList.remove('on');const p=c;c=i;S[c].classList.add('on');window.scrollTo(0,0);up();setTimeout(()=>{S[p].classList.remove('out');b=false},550);if(i===3)anim()}
+function go(d){goTo(c+d)}
+document.addEventListener('keydown',e=>{if(e.key==='ArrowRight'||e.key===' '||e.key==='PageDown'){e.preventDefault();go(1)}else if(e.key==='ArrowLeft'||e.key==='PageUp'){e.preventDefault();go(-1)}else if(e.key==='Home'){e.preventDefault();goTo(0)}else if(e.key==='End'){e.preventDefault();goTo(N-1)}});
+let tx=0,ty=0;document.addEventListener('touchstart',e=>{tx=e.changedTouches[0].screenX;ty=e.changedTouches[0].screenY});document.addEventListener('touchend',e=>{const dx=tx-e.changedTouches[0].screenX;const dy=ty-e.changedTouches[0].screenY;if(Math.abs(dx)>50&&Math.abs(dx)>Math.abs(dy))go(dx>0?1:-1)});
+function anim(){document.querySelectorAll('[data-count]').forEach(el=>{const t=parseInt(el.dataset.count);let n=0;const s=Math.ceil(t/40);const timer=setInterval(()=>{n+=s;if(n>=t){n=t;clearInterval(timer)}el.textContent=n.toLocaleString()+'+'},30)})}
+init();
+</script>
+</body>
+</html>

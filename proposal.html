@@ -1,0 +1,2161 @@
+<!DOCTYPE html>
+<html lang="ms">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>BSN — Business Sustainability Network</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600;700;800;900&display=swap');
+
+:root {
+  --gold: #D4A853;
+  --gold-light: #F0D48A;
+  --navy: #0A1628;
+  --navy-light: #132240;
+  --navy-mid: #1A2D4D;
+  --white: #FFFFFF;
+  --off-white: #F0F2F5;
+  --gray: #8892A4;
+  --accent-blue: #4A9EFF;
+  --accent-teal: #36D6B5;
+  --accent-coral: #FF6B6B;
+  --accent-purple: #A78BFA;
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+  font-family: 'Inter', -apple-system, sans-serif;
+  background: var(--navy);
+  overflow: hidden;
+  width: 100vw;
+  height: 100vh;
+  cursor: default;
+  user-select: none;
+}
+
+/* ========== PROGRESS BAR ========== */
+.progress-bar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 3px;
+  background: linear-gradient(90deg, var(--gold), var(--gold-light));
+  z-index: 999;
+  transition: width 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 0 12px rgba(212, 168, 83, 0.5);
+}
+
+/* ========== SLIDE SYSTEM ========== */
+.deck {
+  width: 100vw;
+  height: 100vh;
+  position: relative;
+}
+
+.slide {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  transform: scale(0.95);
+  transition: opacity 0.8s cubic-bezier(0.4, 0, 0.2, 1), transform 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+  pointer-events: none;
+  will-change: opacity, transform;
+}
+
+.slide.active {
+  opacity: 1;
+  transform: scale(1);
+  pointer-events: auto;
+}
+
+.slide.exit-left {
+  opacity: 0;
+  transform: translateX(-60px) scale(0.97);
+}
+
+.slide.exit-right {
+  opacity: 0;
+  transform: translateX(60px) scale(0.97);
+}
+
+/* ========== SHARED ELEMENTS ========== */
+.reveal {
+  opacity: 0;
+  transform: translateY(40px);
+  transition: opacity 0.7s cubic-bezier(0.4, 0, 0.2, 1), transform 0.7s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.slide.active .reveal {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.slide.active .reveal.d1 { transition-delay: 0.12s; }
+.slide.active .reveal.d2 { transition-delay: 0.24s; }
+.slide.active .reveal.d3 { transition-delay: 0.36s; }
+.slide.active .reveal.d4 { transition-delay: 0.48s; }
+.slide.active .reveal.d5 { transition-delay: 0.6s; }
+.slide.active .reveal.d6 { transition-delay: 0.72s; }
+.slide.active .reveal.d7 { transition-delay: 0.84s; }
+.slide.active .reveal.d8 { transition-delay: 0.96s; }
+
+.reveal-scale {
+  opacity: 0;
+  transform: scale(0.8);
+  transition: opacity 0.8s cubic-bezier(0.34, 1.56, 0.64, 1), transform 0.8s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.slide.active .reveal-scale { opacity: 1; transform: scale(1); }
+.slide.active .reveal-scale.d1 { transition-delay: 0.15s; }
+.slide.active .reveal-scale.d2 { transition-delay: 0.3s; }
+.slide.active .reveal-scale.d3 { transition-delay: 0.45s; }
+
+.gold { color: var(--gold); }
+.teal { color: var(--accent-teal); }
+.blue { color: var(--accent-blue); }
+.coral { color: var(--accent-coral); }
+.purple { color: var(--accent-purple); }
+
+/* ========== NAV ========== */
+.nav-bar {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 48px;
+  background: rgba(10, 22, 40, 0.85);
+  backdrop-filter: blur(20px);
+  border-top: 1px solid rgba(255,255,255,0.06);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 24px;
+  z-index: 100;
+}
+
+.nav-left {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.nav-counter {
+  font-family: 'Space Grotesk', monospace;
+  font-size: 13px;
+  color: rgba(255,255,255,0.35);
+  font-weight: 500;
+  letter-spacing: 1px;
+}
+
+.nav-counter .current {
+  color: var(--gold);
+  font-size: 15px;
+  font-weight: 700;
+}
+
+.nav-dots {
+  display: flex;
+  gap: 4px;
+}
+
+.nav-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 3px;
+  background: rgba(255,255,255,0.12);
+  transition: all 0.3s ease;
+  cursor: pointer;
+}
+
+.nav-dot.active {
+  background: var(--gold);
+  width: 20px;
+}
+
+.nav-right {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.nav-btn {
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  background: rgba(255,255,255,0.06);
+  border: 1px solid rgba(255,255,255,0.08);
+  color: rgba(255,255,255,0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  font-size: 12px;
+  transition: all 0.2s ease;
+}
+
+.nav-btn:hover {
+  background: rgba(255,255,255,0.12);
+  color: white;
+  border-color: var(--gold);
+}
+
+/* ========== SLIDE 1: OPENING ========== */
+.s-open {
+  background: var(--navy);
+  overflow: hidden;
+  flex-direction: column;
+  gap: 0;
+}
+
+.s-open::before {
+  content: '';
+  position: absolute;
+  width: 600px;
+  height: 600px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(212,168,83,0.08) 0%, transparent 70%);
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  animation: breathe 6s ease-in-out infinite;
+}
+
+@keyframes breathe {
+  0%, 100% { transform: translate(-50%, -50%) scale(1); opacity: 0.6; }
+  50% { transform: translate(-50%, -50%) scale(1.15); opacity: 1; }
+}
+
+.open-badge {
+  font-family: 'Space Grotesk', monospace;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 5px;
+  text-transform: uppercase;
+  color: var(--gold);
+  padding: 10px 28px;
+  border: 1px solid rgba(212, 168, 83, 0.25);
+  border-radius: 40px;
+  background: rgba(212, 168, 83, 0.06);
+  position: relative;
+  z-index: 1;
+}
+
+.open-title {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: clamp(52px, 7vw, 100px);
+  font-weight: 700;
+  color: var(--white);
+  text-align: center;
+  line-height: 1.0;
+  position: relative;
+  z-index: 1;
+  letter-spacing: -2px;
+  margin: 28px 0 20px;
+}
+
+.open-title em {
+  font-style: normal;
+  background: linear-gradient(135deg, var(--gold), var(--gold-light));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.open-sub {
+  font-size: clamp(15px, 2vw, 19px);
+  font-weight: 300;
+  color: var(--gray);
+  text-align: center;
+  max-width: 560px;
+  line-height: 1.6;
+  position: relative;
+  z-index: 1;
+}
+
+.open-line {
+  width: 48px;
+  height: 2px;
+  background: var(--gold);
+  margin: 28px auto;
+  position: relative;
+  z-index: 1;
+  border-radius: 1px;
+}
+
+.open-footer {
+  font-family: 'Space Grotesk', monospace;
+  font-size: 11px;
+  color: rgba(255,255,255,0.2);
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  position: relative;
+  z-index: 1;
+}
+
+/* ========== SLIDE 2: THE PROBLEM ========== */
+.s-problem {
+  background: var(--off-white);
+  flex-direction: column;
+  align-items: center;
+  gap: 0;
+  overflow: hidden;
+}
+
+.problem-number {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: clamp(120px, 18vw, 240px);
+  font-weight: 700;
+  color: rgba(10, 22, 40, 0.03);
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  line-height: 1;
+  pointer-events: none;
+}
+
+.problem-content {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 32px;
+  width: 100%;
+  max-width: 1000px;
+  padding: 0 40px;
+}
+
+.problem-label {
+  font-family: 'Space Grotesk', monospace;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 4px;
+  text-transform: uppercase;
+  color: var(--accent-coral);
+  padding: 8px 20px;
+  border: 1px solid rgba(255,107,107,0.2);
+  border-radius: 30px;
+  background: rgba(255,107,107,0.06);
+}
+
+.problem-headline {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: clamp(36px, 5vw, 64px);
+  font-weight: 700;
+  color: var(--navy);
+  text-align: center;
+  line-height: 1.1;
+  letter-spacing: -1px;
+}
+
+.problem-items {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 20px;
+  width: 100%;
+}
+
+.problem-card {
+  background: white;
+  border-radius: 16px;
+  padding: 32px 28px;
+  position: relative;
+  overflow: hidden;
+  border: 1px solid rgba(0,0,0,0.06);
+  transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.4s ease;
+}
+
+.problem-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 20px 50px rgba(0,0,0,0.08);
+}
+
+.problem-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+}
+
+.problem-card:nth-child(1)::before { background: linear-gradient(90deg, var(--accent-coral), #FF8E8E); }
+.problem-card:nth-child(2)::before { background: linear-gradient(90deg, #F59E0B, #FBBF24); }
+.problem-card:nth-child(3)::before { background: linear-gradient(90deg, var(--accent-purple), #C4B5FD); }
+
+.problem-icon {
+  font-size: 32px;
+  margin-bottom: 16px;
+}
+
+.problem-card h3 {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 17px;
+  font-weight: 700;
+  color: var(--navy);
+  margin-bottom: 8px;
+}
+
+.problem-card p {
+  font-size: 14px;
+  line-height: 1.6;
+  color: var(--gray);
+}
+
+/* ========== SLIDE 3: THE GAP ========== */
+.s-gap {
+  background: linear-gradient(135deg, #0F1D32, #162844);
+  overflow: hidden;
+  flex-direction: column;
+  align-items: center;
+  gap: 0;
+}
+
+.s-gap::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(circle at 20% 80%, rgba(74, 158, 255, 0.06) 0%, transparent 50%),
+    radial-gradient(circle at 80% 20%, rgba(212, 168, 83, 0.06) 0%, transparent 50%);
+  pointer-events: none;
+}
+
+.gap-content {
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  max-width: 1000px;
+  padding: 0 40px;
+}
+
+.gap-label {
+  font-family: 'Space Grotesk', monospace;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 4px;
+  text-transform: uppercase;
+  color: var(--accent-teal);
+  text-align: center;
+  margin-bottom: 24px;
+}
+
+.gap-headline {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: clamp(32px, 4.5vw, 56px);
+  font-weight: 700;
+  color: var(--white);
+  text-align: center;
+  line-height: 1.15;
+  margin-bottom: 48px;
+  letter-spacing: -1px;
+}
+
+.gap-grid {
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  gap: 32px;
+  align-items: center;
+}
+
+.gap-col {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.gap-item {
+  padding: 20px 24px;
+  border-radius: 14px;
+  background: rgba(255,255,255,0.04);
+  border: 1px solid rgba(255,255,255,0.06);
+  backdrop-filter: blur(8px);
+}
+
+.gap-item-label {
+  font-family: 'Space Grotesk', monospace;
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  color: var(--gray);
+  margin-bottom: 8px;
+}
+
+.gap-item-text {
+  font-size: 15px;
+  font-weight: 500;
+  color: rgba(255,255,255,0.85);
+  line-height: 1.5;
+}
+
+.gap-vs {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+}
+
+.gap-vs-line {
+  width: 1px;
+  height: 40px;
+  background: linear-gradient(180deg, transparent, var(--gold), transparent);
+}
+
+.gap-vs-text {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 3px;
+  color: var(--gold);
+  padding: 10px 16px;
+  border: 1px solid rgba(212,168,83,0.3);
+  border-radius: 30px;
+  background: rgba(212,168,83,0.08);
+}
+
+.gap-item.has .gap-item-label { color: var(--accent-teal); }
+.gap-item.miss .gap-item-label { color: var(--accent-coral); }
+.gap-item.has { border-color: rgba(54,214,181,0.15); }
+.gap-item.miss { border-color: rgba(255,107,107,0.12); }
+
+/* ========== SLIDE 4: VISION ========== */
+.s-vision {
+  background: linear-gradient(160deg, var(--navy) 0%, #1C3358 50%, #1F3B6A 100%);
+  flex-direction: column;
+  gap: 0;
+  overflow: hidden;
+}
+
+.s-vision::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(ellipse 800px 400px at 30% 70%, rgba(212,168,83,0.08) 0%, transparent 70%),
+    radial-gradient(ellipse 600px 300px at 70% 30%, rgba(54,214,181,0.05) 0%, transparent 70%);
+  pointer-events: none;
+}
+
+.vision-content {
+  position: relative;
+  z-index: 1;
+  text-align: center;
+  max-width: 900px;
+  padding: 0 40px;
+}
+
+.vision-label {
+  font-family: 'Space Grotesk', monospace;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 4px;
+  text-transform: uppercase;
+  color: var(--gold);
+  margin-bottom: 28px;
+}
+
+.vision-quote {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: clamp(28px, 4vw, 48px);
+  font-weight: 700;
+  color: var(--white);
+  line-height: 1.25;
+  margin-bottom: 16px;
+  letter-spacing: -0.5px;
+}
+
+.vision-quote .highlight {
+  background: linear-gradient(135deg, var(--gold), var(--gold-light));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.vision-numbers {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 32px;
+  margin-top: 48px;
+  width: 100%;
+}
+
+.vision-stat {
+  text-align: center;
+  padding: 32px 16px;
+  border-radius: 16px;
+  background: rgba(255,255,255,0.04);
+  border: 1px solid rgba(255,255,255,0.06);
+  backdrop-filter: blur(8px);
+}
+
+.vision-stat-num {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: clamp(36px, 4vw, 56px);
+  font-weight: 700;
+  line-height: 1;
+  margin-bottom: 8px;
+}
+
+.vision-stat:nth-child(1) .vision-stat-num { color: var(--gold); }
+.vision-stat:nth-child(2) .vision-stat-num { color: var(--accent-teal); }
+.vision-stat:nth-child(3) .vision-stat-num { color: var(--accent-blue); }
+
+.vision-stat-label {
+  font-size: 13px;
+  color: var(--gray);
+  font-weight: 500;
+}
+
+/* ========== SLIDE 5: WHAT IS PROFILING ========== */
+.s-what {
+  background: var(--off-white);
+  flex-direction: column;
+  align-items: center;
+  gap: 0;
+  overflow: hidden;
+}
+
+.what-content {
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  max-width: 1000px;
+  padding: 0 40px;
+}
+
+.what-label {
+  font-family: 'Space Grotesk', monospace;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 4px;
+  text-transform: uppercase;
+  color: var(--accent-blue);
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+.what-headline {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: clamp(32px, 4.5vw, 52px);
+  font-weight: 700;
+  color: var(--navy);
+  text-align: center;
+  line-height: 1.15;
+  margin-bottom: 16px;
+  letter-spacing: -1px;
+}
+
+.what-sub {
+  font-size: 16px;
+  color: var(--gray);
+  text-align: center;
+  max-width: 640px;
+  margin: 0 auto 44px;
+  line-height: 1.6;
+}
+
+.analogy-box {
+  display: flex;
+  align-items: stretch;
+  gap: 0;
+  background: white;
+  border-radius: 20px;
+  overflow: hidden;
+  box-shadow: 0 8px 40px rgba(0,0,0,0.06);
+  border: 1px solid rgba(0,0,0,0.06);
+}
+
+.analogy-left {
+  flex: 1;
+  padding: 36px 32px;
+  background: linear-gradient(135deg, var(--navy), var(--navy-light));
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 16px;
+}
+
+.analogy-left .analogy-emoji {
+  font-size: 40px;
+}
+
+.analogy-left h3 {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--white);
+}
+
+.analogy-left p {
+  font-size: 14px;
+  color: rgba(255,255,255,0.5);
+  line-height: 1.6;
+}
+
+.analogy-arrow {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 64px;
+  flex-shrink: 0;
+  background: linear-gradient(135deg, var(--navy), var(--navy-light));
+  position: relative;
+}
+
+.analogy-arrow::after {
+  content: '→';
+  font-size: 28px;
+  color: var(--gold);
+  font-weight: 700;
+}
+
+.analogy-right {
+  flex: 1.5;
+  padding: 36px 32px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 12px;
+}
+
+.analogy-right h3 {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--navy);
+  margin-bottom: 4px;
+}
+
+.analogy-right .feature-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 0;
+}
+
+.feature-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.feature-dot.gold { background: var(--gold); }
+.feature-dot.teal { background: var(--accent-teal); }
+.feature-dot.blue { background: var(--accent-blue); }
+
+.feature-text {
+  font-size: 14px;
+  color: #475569;
+  line-height: 1.5;
+}
+
+/* ========== SLIDE 6: PROFILE FIELDS ========== */
+.s-fields {
+  background: var(--navy);
+  flex-direction: column;
+  align-items: center;
+  gap: 0;
+  overflow: hidden;
+}
+
+.s-fields::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(ellipse 1200px 600px at 50% 100%, rgba(74,158,255,0.06) 0%, transparent 70%);
+  pointer-events: none;
+}
+
+.fields-content {
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  max-width: 1000px;
+  padding: 0 40px;
+}
+
+.fields-label {
+  font-family: 'Space Grotesk', monospace;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 4px;
+  text-transform: uppercase;
+  color: var(--gold);
+  text-align: center;
+  margin-bottom: 16px;
+}
+
+.fields-headline {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: clamp(28px, 4vw, 44px);
+  font-weight: 700;
+  color: var(--white);
+  text-align: center;
+  line-height: 1.15;
+  margin-bottom: 40px;
+  letter-spacing: -0.5px;
+}
+
+.fields-cols {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 20px;
+}
+
+.field-col {
+  padding: 28px 24px;
+  border-radius: 16px;
+  background: rgba(255,255,255,0.04);
+  border: 1px solid rgba(255,255,255,0.06);
+}
+
+.field-col-head {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 20px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid rgba(255,255,255,0.06);
+}
+
+.field-col-icon {
+  font-size: 22px;
+}
+
+.field-col-title {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--white);
+}
+
+.field-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 9px 0;
+}
+
+.field-bar {
+  height: 2px;
+  border-radius: 1px;
+  flex-shrink: 0;
+  width: 16px;
+}
+
+.field-bar.gold { background: var(--gold); }
+.field-bar.teal { background: var(--accent-teal); }
+.field-bar.blue { background: var(--accent-blue); }
+
+.field-text {
+  font-size: 13px;
+  color: rgba(255,255,255,0.6);
+  font-weight: 400;
+}
+
+/* ========== SLIDE 7: NETWORKING EFFECT ========== */
+.s-network {
+  background: linear-gradient(160deg, #0D1B2E, #142944);
+  overflow: hidden;
+  flex-direction: column;
+  align-items: center;
+  gap: 0;
+}
+
+.network-canvas {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+.network-node {
+  position: absolute;
+  border-radius: 50%;
+  background: rgba(212,168,83,0.15);
+  border: 1px solid rgba(212,168,83,0.2);
+  animation: float 8s ease-in-out infinite;
+}
+
+.network-node:nth-child(1) { width: 12px; height: 12px; top: 15%; left: 10%; animation-delay: 0s; }
+.network-node:nth-child(2) { width: 8px; height: 8px; top: 25%; right: 15%; animation-delay: -2s; }
+.network-node:nth-child(3) { width: 16px; height: 16px; bottom: 20%; left: 20%; animation-delay: -4s; }
+.network-node:nth-child(4) { width: 10px; height: 10px; bottom: 30%; right: 10%; animation-delay: -1s; }
+.network-node:nth-child(5) { width: 6px; height: 6px; top: 40%; left: 5%; animation-delay: -3s; }
+.network-node:nth-child(6) { width: 14px; height: 14px; top: 10%; right: 30%; animation-delay: -5s; }
+
+@keyframes float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-12px); }
+}
+
+.network-content {
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  max-width: 1000px;
+  padding: 0 40px;
+}
+
+.network-label {
+  font-family: 'Space Grotesk', monospace;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 4px;
+  text-transform: uppercase;
+  color: var(--accent-purple);
+  text-align: center;
+  margin-bottom: 16px;
+}
+
+.network-headline {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: clamp(28px, 4vw, 44px);
+  font-weight: 700;
+  color: var(--white);
+  text-align: center;
+  line-height: 1.15;
+  margin-bottom: 44px;
+  letter-spacing: -0.5px;
+}
+
+.network-features {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 16px;
+}
+
+.net-feat {
+  padding: 28px;
+  border-radius: 16px;
+  background: rgba(255,255,255,0.03);
+  border: 1px solid rgba(255,255,255,0.06);
+  transition: background 0.3s ease, border-color 0.3s ease;
+}
+
+.net-feat:hover {
+  background: rgba(255,255,255,0.06);
+  border-color: rgba(212,168,83,0.2);
+}
+
+.net-feat-head {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+.net-feat-icon {
+  width: 40px;
+  height: 40px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+}
+
+.net-feat-icon.gold-bg { background: rgba(212,168,83,0.12); }
+.net-feat-icon.blue-bg { background: rgba(74,158,255,0.12); }
+.net-feat-icon.teal-bg { background: rgba(54,214,181,0.12); }
+.net-feat-icon.purple-bg { background: rgba(167,139,250,0.12); }
+
+.net-feat h3 {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--white);
+}
+
+.net-feat p {
+  font-size: 13px;
+  color: rgba(255,255,255,0.45);
+  line-height: 1.6;
+}
+
+.net-feat-example {
+  margin-top: 14px;
+  padding: 12px 16px;
+  border-radius: 10px;
+  background: rgba(255,255,255,0.04);
+  font-family: 'Space Grotesk', monospace;
+  font-size: 12px;
+  color: rgba(255,255,255,0.3);
+  border-left: 2px solid var(--gold);
+}
+
+/* ========== SLIDE 8: BNI COMPARISON ========== */
+.s-compare {
+  background: var(--off-white);
+  flex-direction: column;
+  align-items: center;
+  gap: 0;
+  overflow: hidden;
+}
+
+.compare-content {
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  max-width: 1000px;
+  padding: 0 40px;
+}
+
+.compare-label {
+  font-family: 'Space Grotesk', monospace;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 4px;
+  text-transform: uppercase;
+  color: var(--gold);
+  text-align: center;
+  margin-bottom: 16px;
+}
+
+.compare-headline {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: clamp(28px, 4vw, 44px);
+  font-weight: 700;
+  color: var(--navy);
+  text-align: center;
+  line-height: 1.15;
+  margin-bottom: 40px;
+  letter-spacing: -0.5px;
+}
+
+.compare-rows {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.compare-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 12px;
+  align-items: stretch;
+}
+
+.compare-row-head {
+  font-family: 'Space Grotesk', monospace;
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  padding: 0 8px;
+  margin-bottom: 4px;
+}
+
+.compare-row-head:nth-child(1) { color: var(--gray); }
+.compare-row-head:nth-child(2) { color: var(--accent-coral); }
+.compare-row-head:nth-child(3) { color: var(--accent-teal); }
+
+.compare-cell {
+  padding: 18px 20px;
+  border-radius: 12px;
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+.compare-cell.label-cell {
+  font-family: 'Space Grotesk', sans-serif;
+  font-weight: 600;
+  font-size: 13px;
+  color: var(--navy);
+  background: white;
+  border: 1px solid rgba(0,0,0,0.06);
+  display: flex;
+  align-items: center;
+}
+
+.compare-cell.bni-cell {
+  background: rgba(255,107,107,0.05);
+  border: 1px solid rgba(255,107,107,0.1);
+  color: #64748B;
+}
+
+.compare-cell.annem-cell {
+  background: rgba(54,214,181,0.06);
+  border: 1px solid rgba(54,214,181,0.12);
+  color: #334155;
+  font-weight: 500;
+}
+
+.compare-cell.annem-cell strong {
+  color: var(--navy);
+}
+
+/* ========== SLIDE 9: MVP ========== */
+.s-mvp {
+  background: linear-gradient(160deg, var(--navy), #162844);
+  flex-direction: column;
+  align-items: center;
+  gap: 0;
+  overflow: hidden;
+}
+
+.s-mvp::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(ellipse 800px 500px at 50% 80%, rgba(212,168,83,0.05) 0%, transparent 60%);
+  pointer-events: none;
+}
+
+.mvp-content {
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  max-width: 1000px;
+  padding: 0 40px;
+}
+
+.mvp-label {
+  font-family: 'Space Grotesk', monospace;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 4px;
+  text-transform: uppercase;
+  color: var(--gold);
+  text-align: center;
+  margin-bottom: 16px;
+}
+
+.mvp-headline {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: clamp(28px, 4vw, 44px);
+  font-weight: 700;
+  color: var(--white);
+  text-align: center;
+  line-height: 1.15;
+  margin-bottom: 40px;
+  letter-spacing: -0.5px;
+}
+
+.mvp-split {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 24px;
+}
+
+.mvp-col {
+  border-radius: 18px;
+  padding: 28px;
+  position: relative;
+  overflow: hidden;
+}
+
+.mvp-col-do {
+  background: linear-gradient(135deg, rgba(54,214,181,0.08), rgba(54,214,181,0.02));
+  border: 1px solid rgba(54,214,181,0.15);
+}
+
+.mvp-col-next {
+  background: rgba(255,255,255,0.03);
+  border: 1px solid rgba(255,255,255,0.06);
+}
+
+.mvp-col-head {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 15px;
+  font-weight: 700;
+  margin-bottom: 20px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.mvp-col-do .mvp-col-head { color: var(--accent-teal); }
+.mvp-col-next .mvp-col-head { color: var(--gray); }
+
+.mvp-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 0;
+  border-bottom: 1px solid rgba(255,255,255,0.04);
+}
+
+.mvp-item:last-child { border-bottom: none; }
+
+.mvp-item-dot {
+  width: 28px;
+  height: 28px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  font-weight: 700;
+  flex-shrink: 0;
+}
+
+.mvp-col-do .mvp-item-dot {
+  background: rgba(54,214,181,0.15);
+  color: var(--accent-teal);
+}
+
+.mvp-col-next .mvp-item-dot {
+  background: rgba(255,255,255,0.06);
+  color: var(--gray);
+}
+
+.mvp-item-text {
+  font-size: 14px;
+  color: rgba(255,255,255,0.7);
+  line-height: 1.4;
+}
+
+.mvp-col-next .mvp-item-text {
+  color: rgba(255,255,255,0.35);
+}
+
+.mvp-note {
+  margin-top: 24px;
+  padding: 18px 24px;
+  border-radius: 14px;
+  background: rgba(74,158,255,0.06);
+  border: 1px solid rgba(74,158,255,0.12);
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.mvp-note-icon {
+  font-size: 20px;
+  flex-shrink: 0;
+}
+
+.mvp-note-text {
+  font-size: 14px;
+  color: rgba(255,255,255,0.55);
+  line-height: 1.5;
+}
+
+/* ========== SLIDE 10: USER FLOW ========== */
+.s-flow {
+  background: var(--off-white);
+  flex-direction: column;
+  align-items: center;
+  gap: 0;
+  overflow: hidden;
+}
+
+.flow-content {
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  max-width: 1000px;
+  padding: 0 40px;
+}
+
+.flow-label {
+  font-family: 'Space Grotesk', monospace;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 4px;
+  text-transform: uppercase;
+  color: var(--accent-blue);
+  text-align: center;
+  margin-bottom: 16px;
+}
+
+.flow-headline {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: clamp(28px, 4vw, 44px);
+  font-weight: 700;
+  color: var(--navy);
+  text-align: center;
+  line-height: 1.15;
+  margin-bottom: 48px;
+  letter-spacing: -0.5px;
+}
+
+.flow-timeline {
+  display: flex;
+  align-items: flex-start;
+  gap: 0;
+  position: relative;
+}
+
+.flow-timeline::before {
+  content: '';
+  position: absolute;
+  top: 32px;
+  left: 40px;
+  right: 40px;
+  height: 2px;
+  background: linear-gradient(90deg, var(--gold), var(--accent-teal), var(--accent-blue));
+  opacity: 0.3;
+}
+
+.flow-step {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 14px;
+  position: relative;
+}
+
+.flow-step-num {
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 26px;
+  background: white;
+  border: 2px solid var(--gold);
+  position: relative;
+  z-index: 1;
+  box-shadow: 0 4px 20px rgba(212,168,83,0.15);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.flow-step:hover .flow-step-num {
+  transform: scale(1.1);
+  box-shadow: 0 8px 30px rgba(212,168,83,0.25);
+}
+
+.flow-step-title {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--navy);
+  text-align: center;
+  max-width: 100px;
+  line-height: 1.3;
+}
+
+.flow-step-desc {
+  font-size: 11px;
+  color: var(--gray);
+  text-align: center;
+  max-width: 110px;
+  line-height: 1.4;
+}
+
+/* ========== SLIDE 11: BENEFITS ========== */
+.s-benefit {
+  background: linear-gradient(160deg, var(--navy) 0%, #1C3358 100%);
+  flex-direction: column;
+  align-items: center;
+  gap: 0;
+  overflow: hidden;
+}
+
+.s-benefit::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(ellipse 600px 400px at 20% 50%, rgba(212,168,83,0.06) 0%, transparent 60%),
+    radial-gradient(ellipse 500px 300px at 80% 50%, rgba(54,214,181,0.04) 0%, transparent 60%);
+  pointer-events: none;
+}
+
+.benefit-content {
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  max-width: 1000px;
+  padding: 0 40px;
+}
+
+.benefit-label {
+  font-family: 'Space Grotesk', monospace;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 4px;
+  text-transform: uppercase;
+  color: var(--gold);
+  text-align: center;
+  margin-bottom: 16px;
+}
+
+.benefit-headline {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: clamp(28px, 4vw, 44px);
+  font-weight: 700;
+  color: var(--white);
+  text-align: center;
+  line-height: 1.15;
+  margin-bottom: 44px;
+  letter-spacing: -0.5px;
+}
+
+.benefit-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 16px;
+}
+
+.benefit-card {
+  padding: 28px;
+  border-radius: 16px;
+  background: rgba(255,255,255,0.04);
+  border: 1px solid rgba(255,255,255,0.06);
+  display: flex;
+  gap: 18px;
+  align-items: flex-start;
+  transition: background 0.3s ease, border-color 0.3s ease;
+}
+
+.benefit-card:hover {
+  background: rgba(255,255,255,0.07);
+  border-color: rgba(212,168,83,0.2);
+}
+
+.benefit-num {
+  width: 40px;
+  height: 40px;
+  border-radius: 12px;
+  background: linear-gradient(135deg, var(--gold), var(--gold-light));
+  color: var(--navy);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 16px;
+  font-weight: 700;
+  flex-shrink: 0;
+}
+
+.benefit-info h3 {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--white);
+  margin-bottom: 6px;
+}
+
+.benefit-info p {
+  font-size: 13px;
+  color: rgba(255,255,255,0.4);
+  line-height: 1.6;
+}
+
+/* ========== SLIDE 12: CTA ========== */
+.s-cta {
+  background: var(--navy);
+  flex-direction: column;
+  gap: 0;
+  overflow: hidden;
+  text-align: center;
+}
+
+.s-cta::before {
+  content: '';
+  position: absolute;
+  width: 800px;
+  height: 800px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(212,168,83,0.1) 0%, transparent 60%);
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  animation: breathe 5s ease-in-out infinite;
+}
+
+.s-cta::after {
+  content: '';
+  position: absolute;
+  width: 500px;
+  height: 500px;
+  border-radius: 50%;
+  border: 1px solid rgba(212,168,83,0.08);
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  animation: ripple 4s ease-in-out infinite;
+}
+
+@keyframes ripple {
+  0%, 100% { transform: translate(-50%, -50%) scale(0.8); opacity: 0.5; }
+  50% { transform: translate(-50%, -50%) scale(1.2); opacity: 0; }
+}
+
+.cta-content {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 24px;
+}
+
+.cta-badge {
+  font-family: 'Space Grotesk', monospace;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 5px;
+  text-transform: uppercase;
+  color: var(--gold);
+}
+
+.cta-title {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: clamp(36px, 5vw, 64px);
+  font-weight: 700;
+  color: var(--white);
+  line-height: 1.1;
+  letter-spacing: -1px;
+  max-width: 700px;
+}
+
+.cta-title em {
+  font-style: normal;
+  background: linear-gradient(135deg, var(--gold), var(--gold-light));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.cta-sub {
+  font-size: 17px;
+  color: var(--gray);
+  max-width: 520px;
+  line-height: 1.6;
+}
+
+.cta-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 18px 44px;
+  border-radius: 60px;
+  background: linear-gradient(135deg, var(--gold), var(--gold-light));
+  color: var(--navy);
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 16px;
+  font-weight: 700;
+  border: none;
+  cursor: pointer;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  text-decoration: none;
+}
+
+.cta-btn:hover {
+  transform: scale(1.05);
+  box-shadow: 0 12px 40px rgba(212,168,83,0.35);
+}
+
+.cta-footer {
+  font-size: 12px;
+  color: rgba(255,255,255,0.2);
+  margin-top: 32px;
+}
+
+/* ========== RESPONSIVE ========== */
+@media (max-width: 1200px) {
+  .slide { padding: 40px 48px 64px; }
+  .open-title { font-size: clamp(44px, 6vw, 80px); }
+  .problem-headline { font-size: clamp(32px, 4.5vw, 52px); }
+  .gap-headline { font-size: clamp(28px, 4vw, 48px); }
+  .vision-quote { font-size: clamp(24px, 3.5vw, 40px); }
+}
+
+@media (max-width: 900px) {
+  .slide { padding: 32px 28px 60px; }
+  .problem-items { grid-template-columns: 1fr; gap: 14px; }
+  .gap-grid { grid-template-columns: 1fr; gap: 20px; }
+  .gap-vs { flex-direction: row; }
+  .gap-vs-line { width: 40px; height: 1px; }
+  .gap-headline { font-size: clamp(24px, 4vw, 36px); margin-bottom: 32px; }
+  .vision-numbers { grid-template-columns: repeat(3, 1fr); gap: 12px; margin-top: 32px; }
+  .vision-stat { padding: 20px 12px; }
+  .vision-stat-num { font-size: clamp(28px, 4vw, 44px); }
+  .fields-cols { grid-template-columns: 1fr; gap: 14px; }
+  .field-col { padding: 20px; }
+  .network-features { grid-template-columns: 1fr; gap: 12px; }
+  .net-feat { padding: 20px; }
+  .compare-row { grid-template-columns: 1fr; gap: 8px; }
+  .compare-cell { padding: 14px 16px; }
+  .mvp-split { grid-template-columns: 1fr; gap: 16px; }
+  .mvp-col { padding: 22px; }
+  .flow-timeline { flex-wrap: wrap; justify-content: center; gap: 16px; }
+  .flow-timeline::before { display: none; }
+  .flow-step { min-width: 80px; flex: 0 0 auto; }
+  .flow-step-num { width: 52px; height: 52px; font-size: 22px; }
+  .benefit-grid { grid-template-columns: 1fr; gap: 12px; }
+  .benefit-card { padding: 20px; }
+  .analogy-box { flex-direction: column; }
+  .analogy-arrow { width: auto; height: 48px; }
+  .analogy-arrow::after { content: '↓'; }
+  .analogy-left, .analogy-right { padding: 24px; }
+  .problem-card { padding: 24px 20px; }
+  .problem-icon { font-size: 28px; margin-bottom: 12px; }
+  .problem-number { font-size: clamp(80px, 15vw, 160px); }
+}
+
+@media (max-width: 600px) {
+  .slide { padding: 24px 16px 56px; }
+  .open-title { font-size: clamp(32px, 10vw, 48px); letter-spacing: -1px; margin: 20px 0 14px; }
+  .open-sub { font-size: 14px; }
+  .open-badge { font-size: 9px; padding: 8px 20px; letter-spacing: 3px; }
+  .open-footer { font-size: 9px; letter-spacing: 2px; }
+  .problem-headline { font-size: clamp(22px, 6vw, 30px); }
+  .problem-label, .gap-label, .vision-label, .what-label, .fields-label,
+  .network-label, .compare-label, .mvp-label, .flow-label, .benefit-label,
+  .cta-badge {
+    font-size: 10px; letter-spacing: 3px; padding: 6px 14px;
+  }
+  .gap-headline, .what-headline, .fields-headline, .network-headline,
+  .compare-headline, .mvp-headline, .flow-headline, .benefit-headline {
+    font-size: clamp(20px, 6vw, 28px); margin-bottom: 24px; letter-spacing: -0.3px;
+  }
+  .what-sub { font-size: 13px; margin-bottom: 28px; }
+  .vision-quote { font-size: clamp(20px, 5.5vw, 28px); margin-bottom: 12px; }
+  .vision-numbers { grid-template-columns: 1fr; gap: 10px; }
+  .vision-stat { padding: 16px 12px; }
+  .fields-cols { gap: 10px; }
+  .field-col { padding: 16px; }
+  .field-row { padding: 6px 0; }
+  .field-text { font-size: 12px; }
+  .net-feat { padding: 16px; }
+  .net-feat h3 { font-size: 14px; }
+  .net-feat p { font-size: 12px; }
+  .net-feat-example { font-size: 11px; padding: 10px 12px; margin-top: 10px; }
+  .compare-headline { font-size: clamp(18px, 5vw, 24px); }
+  .mvp-col { padding: 18px; }
+  .mvp-col-head { font-size: 13px; }
+  .mvp-item-text { font-size: 12px; }
+  .mvp-note { padding: 14px 16px; flex-direction: column; gap: 8px; text-align: center; }
+  .mvp-note-text { font-size: 12px; }
+  .flow-step { min-width: 60px; }
+  .flow-step-num { width: 44px; height: 44px; font-size: 18px; border-width: 1.5px; }
+  .flow-step-title { font-size: 11px; max-width: 70px; }
+  .flow-step-desc { font-size: 10px; max-width: 80px; }
+  .benefit-card { padding: 16px; gap: 12px; }
+  .benefit-num { width: 32px; height: 32px; font-size: 13px; }
+  .benefit-info h3 { font-size: 14px; }
+  .benefit-info p { font-size: 12px; }
+  .cta-title { font-size: clamp(26px, 8vw, 40px); }
+  .cta-sub { font-size: 14px; max-width: 320px; }
+  .cta-btn { padding: 14px 32px; font-size: 14px; }
+  .analogy-left, .analogy-right { padding: 20px; }
+  .analogy-left h3, .analogy-right h3 { font-size: 16px; }
+  .analogy-left p { font-size: 12px; }
+  .feature-text { font-size: 12px; }
+  .nav-bar { padding: 0 16px; }
+  .nav-counter { font-size: 11px; }
+  .nav-counter .current { font-size: 13px; }
+}
+</style>
+</head>
+<body>
+
+<div class="progress-bar" id="progressBar"></div>
+
+<div class="deck" id="deck">
+
+  <!-- ========== SLIDE 1: OPENING ========== -->
+  <div class="slide s-open active" data-s="1">
+    <div class="open-title reveal d1">Business<br>Sustainability<br>Network</div>
+    <div class="open-line reveal d2"></div>
+    <div class="open-sub reveal d3">
+      Memperkasakan 1,000+ alumni BSS melalui profil perniagaan yang structured —
+      supaya setiap alumni boleh networking, referral, dan kembangkan bisnes bersama.
+    </div>
+    <div class="open-footer reveal d4">Annems Leadership Solution · Business Sustainability Solution</div>
+  </div>
+
+  <!-- ========== SLIDE 2: PROBLEM ========== -->
+  <div class="slide s-problem" data-s="2">
+    <div class="problem-number reveal-scale">!</div>
+    <div class="problem-content">
+      <div class="problem-label reveal">MASALAH</div>
+      <div class="problem-headline reveal d1">Annems ada <span class="gold">1,000+ alumni</span><br>tapi zero profiling</div>
+      <div class="problem-items">
+        <div class="problem-card reveal d2">
+          <div class="problem-icon">📋</div>
+          <h3>Hanya Senarai Nama</h3>
+          <p>Ada list peserta, tapi tak tahu siapa mereka, apa yang mereka jual, atau apa yang mereka perlukan.</p>
+        </div>
+        <div class="problem-card reveal d3">
+          <div class="problem-icon">🔇</div>
+          <h3>Alumni Terputus</h3>
+          <p>Selepas 5 bulan BSS tamat, alumni hilang dari radar. Tiada platform untuk kekal berhubung.</p>
+        </div>
+        <div class="problem-card reveal d4">
+          <div class="problem-icon">💸</div>
+          <h3>Peluang Terbazir</h3>
+          <p>Dua alumni mungkin saling memerlukan — tapi tak pernah tahu tentang kewujudan antara satu sama lain.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ========== SLIDE 3: THE GAP ========== -->
+  <div class="slide s-gap" data-s="3">
+    <div class="gap-content">
+      <div class="gap-label reveal">KENAPA KITA?</div>
+      <div class="gap-headline reveal d1">Annems ada <span class="gold">expertise coaching</span>.<br>Kita ada <span class="teal">expertise teknologi</span>.</div>
+      <div class="gap-grid">
+        <div class="gap-col">
+          <div class="gap-item has reveal d2">
+            <div class="gap-item-label">✅ YANG ANNEMS ADA</div>
+            <div class="gap-item-text">Program BSS 5 bulan, methodology, coaching, dan 1,000+ alumni network</div>
+          </div>
+          <div class="gap-item has reveal d3">
+            <div class="gap-item-label">✅ YANG ANNEMS ADA</div>
+            <div class="gap-item-text">Trust & bonding antara peserta batch yang sama</div>
+          </div>
+        </div>
+        <div class="gap-vs reveal d4">
+          <div class="gap-vs-line"></div>
+          <div class="gap-vs-text">GAP</div>
+          <div class="gap-vs-line"></div>
+        </div>
+        <div class="gap-col">
+          <div class="gap-item miss reveal d5">
+            <div class="gap-item-label">❌ YANG ANNEMS TAK ADA</div>
+            <div class="gap-item-text">Sistem profiling perniagaan untuk setiap alumni</div>
+          </div>
+          <div class="gap-item miss reveal d6">
+            <div class="gap-item-label">❌ YANG ANNEMS TAK ADA</div>
+            <div class="gap-item-text">Platform digital untuk networking & referral selepas BSS</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ========== SLIDE 4: VISION ========== -->
+  <div class="slide s-vision" data-s="4">
+    <div class="vision-content">
+      <div class="vision-label reveal">VISI</div>
+      <div class="vision-quote reveal d1">
+        Bayangkan jika semua alumni BSS boleh <span class="highlight">cari supplier</span>,
+        jumpa <span class="highlight">buyer baharu</span>, temui <span class="highlight">rakan niaga</span>,
+        dan <span class="highlight">refer antara satu sama lain</span> — secara aktif.
+      </div>
+      <div class="vision-numbers reveal d2">
+        <div class="vision-stat">
+          <div class="vision-stat-num" data-count="1000">0</div>
+          <div class="vision-stat-label">Alumni BSS</div>
+        </div>
+        <div class="vision-stat">
+          <div class="vision-stat-num" data-count="21">0</div>
+          <div class="vision-stat-label">Batch Diluluskan</div>
+        </div>
+        <div class="vision-stat">
+          <div class="vision-stat-num" data-count="500">0</div>
+          <div class="vision-stat-label">Potensi Referral / Tahun</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ========== SLIDE 5: WHAT IS PROFILING ========== -->
+  <div class="slide s-what" data-s="5">
+    <div class="what-content">
+      <div class="what-label reveal">APA ITU PROFILING</div>
+      <div class="what-headline reveal d1">Kad nama digital — tapi <span class="gold">jauh lebih powerful</span></div>
+      <div class="what-sub reveal d2">Bukan sekadar nama & nombor telefon. Ini gambaran penuh tentang bisnes seseorang — produk, capacity, keperluan, dan tawaran.</div>
+      <div class="analogy-box reveal d3">
+        <div class="analogy-left">
+          <div class="analogy-emoji">💼</div>
+          <h3>Kad Nama Biasa</h3>
+          <p>Nama, jawatan, nombor telefon, email. Itu sahaja. Tak ada maklumat tentang bisnes sebenar.</p>
+        </div>
+        <div class="analogy-arrow"></div>
+        <div class="analogy-right">
+          <h3>Profil Perniagaan BSN</h3>
+          <div class="feature-row">
+            <div class="feature-dot gold"></div>
+            <div class="feature-text"><strong>Identiti penuh</strong> — industri, lokasi, saiz, revenue, tahun ditubuh</div>
+          </div>
+          <div class="feature-row">
+            <div class="feature-dot teal"></div>
+            <div class="feature-text"><strong>Produk & perkhidmatan</strong> — apa yang mereka jual, sijil, capacity, target pasar</div>
+          </div>
+          <div class="feature-row">
+            <div class="feature-dot blue"></div>
+            <div class="feature-text"><strong>Keperluan & tawaran</strong> — mencari supplier, buyer, JV partner, atau ada capacity lebih</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ========== SLIDE 6: PROFILE FIELDS ========== -->
+  <div class="slide s-fields" data-s="6">
+    <div class="fields-content">
+      <div class="fields-label reveal">APA YANG KITA KUMPULKAN</div>
+      <div class="fields-headline reveal d1">Tiga kategori utama data profil</div>
+      <div class="fields-cols">
+        <div class="field-col reveal d2">
+          <div class="field-col-head">
+            <div class="field-col-icon">🏢</div>
+            <div class="field-col-title">Identiti Perniagaan</div>
+          </div>
+          <div class="field-row"><div class="field-bar gold"></div><div class="field-text">Nama syarikat & SSM</div></div>
+          <div class="field-row"><div class="field-bar gold"></div><div class="field-text">Industri & sub-sektor</div></div>
+          <div class="field-row"><div class="field-bar gold"></div><div class="field-text">Lokasi HQ & operasi</div></div>
+          <div class="field-row"><div class="field-bar gold"></div><div class="field-text">Tahun ditubuh & jumlah staff</div></div>
+          <div class="field-row"><div class="field-bar gold"></div><div class="field-text">Revenue tahunan</div></div>
+        </div>
+        <div class="field-col reveal d3">
+          <div class="field-col-head">
+            <div class="field-col-icon">📦</div>
+            <div class="field-col-title">Produk & Perkhidmatan</div>
+          </div>
+          <div class="field-row"><div class="field-bar teal"></div><div class="field-text">Deskripsi ringkas bisnes</div></div>
+          <div class="field-row"><div class="field-bar teal"></div><div class="field-text">Senarai produk / service</div></div>
+          <div class="field-row"><div class="field-bar teal"></div><div class="field-text">Sijil (Halal, ISO, dll)</div></div>
+          <div class="field-row"><div class="field-bar teal"></div><div class="field-text">Capacity & skala operasi</div></div>
+          <div class="field-row"><div class="field-bar teal"></div><div class="field-text">Website & social media</div></div>
+        </div>
+        <div class="field-col reveal d4">
+          <div class="field-col-head">
+            <div class="field-col-icon">🎯</div>
+            <div class="field-col-title">Permintaan & Tawaran</div>
+          </div>
+          <div class="field-row"><div class="field-bar blue"></div><div class="field-text">Mencari supplier?</div></div>
+          <div class="field-row"><div class="field-bar blue"></div><div class="field-text">Mencari buyer / distributor?</div></div>
+          <div class="field-row"><div class="field-bar blue"></div><div class="field-text">Mencari rakan niaga (JV)?</div></div>
+          <div class="field-row"><div class="field-bar blue"></div><div class="field-text">Mencari pelabur?</div></div>
+          <div class="field-row"><div class="field-bar blue"></div><div class="field-text">Ada capacity lebih untuk ditawarkan?</div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ========== SLIDE 7: NETWORKING ========== -->
+  <div class="slide s-network" data-s="7">
+    <div class="network-canvas">
+      <div class="network-node"></div>
+      <div class="network-node"></div>
+      <div class="network-node"></div>
+      <div class="network-node"></div>
+      <div class="network-node"></div>
+      <div class="network-node"></div>
+    </div>
+    <div class="network-content">
+      <div class="network-label reveal">PROFILING ENABLES NETWORKING</div>
+      <div class="network-headline reveal d1">Dari data → kepada <span class="gold">hubungan bermakna</span></div>
+      <div class="network-features">
+        <div class="net-feat reveal d2">
+          <div class="net-feat-head">
+            <div class="net-feat-icon gold-bg">🔍</div>
+            <h3>Searchable Directory</h3>
+          </div>
+          <p>Alumni boleh cari sesiapa mengikut industri, lokasi, atau apa yang mereka tawarkan/dicari.</p>
+          <div class="net-feat-example">"Siapa dalam Circle yang boleh supply packaging?"</div>
+        </div>
+        <div class="net-feat reveal d3">
+          <div class="net-feat-head">
+            <div class="net-feat-icon blue-bg">🔔</div>
+            <h3>Smart Matching</h3>
+          </div>
+          <p>System detect keserasian dan push notification terus kepada pihak yang relevan.</p>
+          <div class="net-feat-example">"Ahmad mencari supplier bahan mentah" ↔ "Siti boleh supply bahan mentah"</div>
+        </div>
+        <div class="net-feat reveal d4">
+          <div class="net-feat-head">
+            <div class="net-feat-icon teal-bg">📋</div>
+            <h3>Needs Board</h3>
+          </div>
+          <p>Papan pengumuman permintaan — ahli post "Saya mencari X" dan ahli lain yang sesuai boleh respond terus.</p>
+          <div class="net-feat-example">"Mencari freight forwarder ke Indonesia"</div>
+        </div>
+        <div class="net-feat reveal d5">
+          <div class="net-feat-head">
+            <div class="net-feat-icon purple-bg">🏷️</div>
+            <h3>Offer Board</h3>
+          </div>
+          <p>Papan tawaran — ahli post capacity atau servis yang mereka boleh tawarkan kepada komuniti.</p>
+          <div class="net-feat-example">"Ada capacity kilang lebih — siapa nak guna?"</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ========== SLIDE 8: BNI COMPARISON ========== -->
+  <div class="slide s-compare" data-s="8">
+    <div class="compare-content">
+      <div class="compare-label reveal">KENAPA LEBIH HEBAT DARI BNI</div>
+      <div class="compare-headline reveal d1">Trust sudah ada. Profiling buatkan ia <span class="gold">10x lagi powerful</span>.</div>
+      <div class="compare-rows">
+        <div class="compare-row reveal d2">
+          <div class="compare-row-head">ASPEK</div>
+          <div class="compare-row-head">BNI</div>
+          <div class="compare-row-head">BSN</div>
+        </div>
+        <div class="compare-row reveal d3">
+          <div class="compare-cell label-cell">Trust Foundation</div>
+          <div class="compare-cell bni-cell">Stranger-to-stranger — trust ambil berbulan/tahun</div>
+          <div class="compare-cell annem-cell"><strong>Pre-built trust</strong> — semua dah 5 bulan bersama dalam BSS</div>
+        </div>
+        <div class="compare-row reveal d4">
+          <div class="compare-cell label-cell">Kualiti Ahli</div>
+          <div class="compare-cell bni-cell">Terbuka — pelbagai saiz bisnes</div>
+          <div class="compare-cell annem-cell"><strong>Curated</strong> — RM1M+ revenue, 5+ staff, decision makers</div>
+        </div>
+        <div class="compare-row reveal d5">
+          <div class="compare-cell label-cell">Industri</div>
+          <div class="compare-cell bni-cell">Satu profession per chapter</div>
+          <div class="compare-cell annem-cell"><strong>Cross-industry</strong> — lebih banyak peluang referral silang</div>
+        </div>
+        <div class="compare-row reveal d6">
+          <div class="compare-cell label-cell">Data Perniagaan</div>
+          <div class="compare-cell bni-cell">Asas sahaja (nama, bidang)</div>
+          <div class="compare-cell annem-cell"><strong>Profiling mendalam</strong> — produk, capacity, demand, offer</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ========== SLIDE 9: MVP ========== -->
+  <div class="slide s-mvp" data-s="9">
+    <div class="mvp-content">
+      <div class="mvp-label reveal">APA YANG KITA BINA</div>
+      <div class="mvp-headline reveal d1">MVP — Fokus pada <span class="gold">profiling dulu</span></div>
+      <div class="mvp-split">
+        <div class="mvp-col mvp-col-do reveal d2">
+          <div class="mvp-col-head">✅ Fasa 1 — Kita Bina</div>
+          <div class="mvp-item">
+            <div class="mvp-item-dot">1</div>
+            <div class="mvp-item-text">Business Profile Form — alumni isi profil perniagaan lengkap</div>
+          </div>
+          <div class="mvp-item">
+            <div class="mvp-item-dot">2</div>
+            <div class="mvp-item-text">Profile Database — semua profil tersimpan & structured</div>
+          </div>
+          <div class="mvp-item">
+            <div class="mvp-item-dot">3</div>
+            <div class="mvp-item-text">Searchable Directory — cari & filter profil alumni lain</div>
+          </div>
+          <div class="mvp-item">
+            <div class="mvp-item-dot">4</div>
+            <div class="mvp-item-text">Profile View — lihat profil lengkap ahli lain</div>
+          </div>
+          <div class="mvp-item">
+            <div class="mvp-item-dot">5</div>
+            <div class="mvp-item-text">Needs & Offers Board — post & view permintaan/tawaran</div>
+          </div>
+        </div>
+        <div class="mvp-col mvp-col-next reveal d3">
+          <div class="mvp-col-head">⏳ Fasa Seterusnya</div>
+          <div class="mvp-item">
+            <div class="mvp-item-dot">—</div>
+            <div class="mvp-item-text">Mobile App (web-first MVP dulu)</div>
+          </div>
+          <div class="mvp-item">
+            <div class="mvp-item-dot">—</div>
+            <div class="mvp-item-text">Automated Matching Engine</div>
+          </div>
+          <div class="mvp-item">
+            <div class="mvp-item-dot">—</div>
+            <div class="mvp-item-text">Referral Tracking System</div>
+          </div>
+          <div class="mvp-item">
+            <div class="mvp-item-dot">—</div>
+            <div class="mvp-item-text">Payment & Billing</div>
+          </div>
+          <div class="mvp-item">
+            <div class="mvp-item-dot">—</div>
+            <div class="mvp-item-text">Event Management</div>
+          </div>
+        </div>
+      </div>
+      <div class="mvp-note reveal d4">
+        <div class="mvp-note-icon">📌</div>
+        <div class="mvp-note-text"><strong>Prinsip:</strong> Selesaikan satu masalah dengan baik dulu. Profiling → Directory → Search → Matching. Bertahap, bukan semua sekaligus.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ========== SLIDE 10: USER FLOW ========== -->
+  <div class="slide s-flow" data-s="10">
+    <div class="flow-content">
+      <div class="flow-label reveal">ALIRAN PENGGUNA</div>
+      <div class="flow-headline reveal d1">Dari alumni tamat program → ke <span class="gold">business growth</span></div>
+      <div class="flow-timeline">
+        <div class="flow-step reveal d2">
+          <div class="flow-step-num">🎓</div>
+          <div class="flow-step-title">Tamat BSS</div>
+          <div class="flow-step-desc">Alumni selesai program 5 bulan</div>
+        </div>
+        <div class="flow-step reveal d3">
+          <div class="flow-step-num">✉️</div>
+          <div class="flow-step-title">Terima Link</div>
+          <div class="flow-step-desc">Dapat jemputan "Join Circle"</div>
+        </div>
+        <div class="flow-step reveal d4">
+          <div class="flow-step-num">📝</div>
+          <div class="flow-step-title">Daftar & Isi Profil</div>
+          <div class="flow-step-desc">Daftar akaun dan isi maklumat bisnes</div>
+        </div>
+        <div class="flow-step reveal d5">
+          <div class="flow-step-num">✅</div>
+          <div class="flow-step-title">Profil Aktif</div>
+          <div class="flow-step-desc">Profil muncul dalam directory</div>
+        </div>
+        <div class="flow-step reveal d6">
+          <div class="flow-step-num">🔍</div>
+          <div class="flow-step-title">Search & Jumpa</div>
+          <div class="flow-step-desc">Cari alumni lain mengikut keperluan</div>
+        </div>
+        <div class="flow-step reveal d7">
+          <div class="flow-step-num">🤝</div>
+          <div class="flow-step-title">Networking</div>
+          <div class="flow-step-desc">Connect, collaborate, grow together</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ========== SLIDE 11: BENEFITS ========== -->
+  <div class="slide s-benefit" data-s="11">
+    <div class="benefit-content">
+      <div class="benefit-label reveal">SIAPA YANG UNTUNG</div>
+      <div class="benefit-headline reveal d1">Semua pihak untung — ini bukan zero-sum game</div>
+      <div class="benefit-grid">
+        <div class="benefit-card reveal d2">
+          <div class="benefit-num">1</div>
+          <div class="benefit-info">
+            <h3>Alumni BSS</h3>
+            <p>Kenal sesama alumni, cari supplier/buyer, dapat referral bisnes, kekal connected selepas BSS tamat</p>
+          </div>
+        </div>
+        <div class="benefit-card reveal d3">
+          <div class="benefit-num">2</div>
+          <div class="benefit-info">
+            <h3>Annems Leadership</h3>
+            <p>Recurring revenue dari membership. Alumni engagement berterusan. Data impact untuk pitching korporat/kerajaan</p>
+          </div>
+        </div>
+        <div class="benefit-card reveal d4">
+          <div class="benefit-num">3</div>
+          <div class="benefit-info">
+            <h3>Ekosistem PKS Malaysia</h3>
+            <p>PKS yang saling connect = value chain yang lebih kukuh. Referral = jualan tanpa kos marketing</p>
+          </div>
+        </div>
+        <div class="benefit-card reveal d5">
+          <div class="benefit-num">4</div>
+          <div class="benefit-info">
+            <h3>Peningkatan Nilai BSS</h3>
+            <p>BSS bukan lagi program 5 bulan — tapi ekosistem seumur hidup. Ini bukti berharga tentang keberkesanan BSS</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ========== SLIDE 12: CTA ========== -->
+  <div class="slide s-cta" data-s="12">
+    <div class="cta-content">
+      <div class="cta-badge reveal">BUSINESS SUSTAINABILITY NETWORK</div>
+      <div class="cta-title reveal d1">Jom Mulakan<br><em>Langkah Pertama</em></div>
+      <div class="cta-sub reveal d2">Profiling alumni ialah foundation — tanpa ia, semua networking dan referral strategy tak mungkin jadi. Jom kita bina ia bersama.</div>
+      <button class="cta-btn reveal d3" onclick="alert('Proposal ini telah dikemukakan! Terima kasih! 🚀')">🚀 Mulakan MVP Sekarang</button>
+      <div class="cta-footer reveal d4">Proposal ini disediakan oleh pasukan teknologi untuk Annems Leadership Solution</div>
+    </div>
+  </div>
+
+</div>
+
+<!-- NAV -->
+<div class="nav-bar">
+  <div class="nav-left">
+    <div class="nav-dots" id="dots"></div>
+    <div class="nav-counter"><span class="current" id="curNum">01</span> / <span id="totalNum">12</span></div>
+  </div>
+  <div class="nav-right">
+    <button class="nav-btn" onclick="go(-1)">◀</button>
+    <button class="nav-btn" onclick="go(1)">▶</button>
+  </div>
+</div>
+
+<script>
+const slides = document.querySelectorAll('.slide');
+const total = slides.length;
+let cur = 0;
+let transitioning = false;
+
+function init() {
+  const dots = document.getElementById('dots');
+  for (let i = 0; i < total; i++) {
+    const d = document.createElement('div');
+    d.className = 'nav-dot' + (i === 0 ? ' active' : '');
+    d.onclick = () => goTo(i);
+    dots.appendChild(d);
+  }
+  document.getElementById('totalNum').textContent = String(total).padStart(2, '0');
+  update();
+  animateCounters();
+}
+
+function update() {
+  document.getElementById('curNum').textContent = String(cur + 1).padStart(2, '0');
+  document.getElementById('progressBar').style.width = ((cur / (total - 1)) * 100) + '%';
+  document.querySelectorAll('.nav-dot').forEach((d, i) => d.classList.toggle('active', i === cur));
+}
+
+function goTo(i) {
+  if (i === cur || transitioning || i < 0 || i >= total) return;
+  transitioning = true;
+  const dir = i > cur ? 'left' : 'right';
+  slides[cur].classList.add(dir === 'left' ? 'exit-left' : 'exit-right');
+  slides[cur].classList.remove('active');
+  const prev = cur;
+  cur = i;
+  slides[cur].classList.add('active');
+  update();
+  setTimeout(() => {
+    slides[prev].classList.remove('exit-left', 'exit-right');
+    transitioning = false;
+  }, 800);
+  if (i === 3) animateCounters();
+}
+
+function go(d) {
+  goTo(cur + d);
+}
+
+document.addEventListener('keydown', e => {
+  if (e.key === 'ArrowRight' || e.key === ' ' || e.key === 'PageDown') { e.preventDefault(); go(1); }
+  else if (e.key === 'ArrowLeft' || e.key === 'PageUp') { e.preventDefault(); go(-1); }
+  else if (e.key === 'Home') { e.preventDefault(); goTo(0); }
+  else if (e.key === 'End') { e.preventDefault(); goTo(total - 1); }
+});
+
+let tx = 0;
+document.addEventListener('touchstart', e => { tx = e.changedTouches[0].screenX; });
+document.addEventListener('touchend', e => {
+  const diff = tx - e.changedTouches[0].screenX;
+  if (Math.abs(diff) > 50) go(diff > 0 ? 1 : -1);
+});
+
+function animateCounters() {
+  document.querySelectorAll('[data-count]').forEach(el => {
+    const target = parseInt(el.dataset.count);
+    const suffix = target >= 500 ? '+' : '+';
+    let current = 0;
+    const step = Math.ceil(target / 40);
+    const timer = setInterval(() => {
+      current += step;
+      if (current >= target) {
+        current = target;
+        clearInterval(timer);
+      }
+      el.textContent = current.toLocaleString() + suffix;
+    }, 30);
+  });
+}
+
+init();
+</script>
+</body>
+</html>
