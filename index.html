@@ -793,20 +793,28 @@ p { font-size: 14px; line-height: 1.65; color: var(--c-text2); }
 }
 
 @media print {
-  body { overflow: visible; height: auto; background: #fff; color: #111; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
-  .deck { position: static; width: auto; height: auto; }
+  @page { size: landscape; margin: 0; }
+  body { overflow: visible !important; height: auto !important; background: #fff !important; color: #111 !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  .deck { position: static !important; width: auto !important; height: auto !important; }
   .prog, .nav, .blob, body::after { display: none !important; }
-  .slide {
+  .slide, .slide:not(.on) {
+    display: flex !important;
     position: relative !important; inset: auto !important;
     opacity: 1 !important; transform: none !important;
     pointer-events: auto !important;
     page-break-after: always;
     break-after: page;
-    min-height: 100vh;
+    width: 100% !important;
+    height: 100vh !important;
+    min-height: 100vh !important;
+    max-height: 100vh !important;
+    overflow: hidden !important;
     background: #fff !important;
     color: #111 !important;
-    border-bottom: 1px solid #ddd;
+    padding: 40px 56px !important;
+    box-sizing: border-box !important;
   }
+  .slide:last-child { page-break-after: auto; break-after: auto; }
   .rv { opacity: 1 !important; transform: none !important; transition: none !important; }
   .slide.on .rv, .slide .rv { opacity: 1 !important; transform: none !important; transition-delay: 0s !important; }
   h1, h2, h3 { color: #111 !important; }
