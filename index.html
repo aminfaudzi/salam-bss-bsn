@@ -791,6 +791,34 @@ p { font-size: 14px; line-height: 1.65; color: var(--c-text2); }
   .dot { width: 3px; height: 3px; }
   .dot.on { width: 12px; }
 }
+
+@media print {
+  body { overflow: visible; height: auto; background: #fff; color: #111; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  .deck { position: static; width: auto; height: auto; }
+  .prog, .nav, .blob, body::after { display: none !important; }
+  .slide {
+    position: relative !important; inset: auto !important;
+    opacity: 1 !important; transform: none !important;
+    pointer-events: auto !important;
+    page-break-after: always;
+    break-after: page;
+    min-height: 100vh;
+    background: #fff !important;
+    color: #111 !important;
+    border-bottom: 1px solid #ddd;
+  }
+  .rv { opacity: 1 !important; transform: none !important; transition: none !important; }
+  .slide.on .rv, .slide .rv { opacity: 1 !important; transform: none !important; transition-delay: 0s !important; }
+  h1, h2, h3 { color: #111 !important; }
+  p, .label, .s1-sub, .s1-meta, .s13-sub, .s13-contact { color: #333 !important; }
+  .s1-title { color: #111 !important; background: none !important; -webkit-background-clip: unset !important; -webkit-text-fill-color: #111 !important; }
+  a { color: #111 !important; }
+  .s-card, .s3-card, .s4-stat, .s5-compare, .s6-col, .s7-feat, .s8-col, .s9-phase, .s11-card, .s12-step, .reward-tier, .points-card, .commission-card, .pricing-col {
+    background: #f9f9f9 !important; border-color: #ddd !important; color: #111 !important;
+  }
+  .s5-col.before { background: #fff0f0 !important; }
+  .s5-col.after { background: #f0fff0 !important; }
+}
 </style>
 </head>
 <body>
